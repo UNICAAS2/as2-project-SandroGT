@@ -1,6 +1,6 @@
 #include "trapezoid.h"
 
-Trapezoid::Trapezoid()
+gasprj::Trapezoid::Trapezoid()
 {
 
 }
