@@ -30,7 +30,8 @@ public:
     // TODO: define constructor
     DAG();
 
-    const DAGNode& getRoot();
+    const DAGNode& getRoot() const;
+    const std::vector<DAGNode>& getNodes() const;
 
 private:
     std::vector<DAGNode> nodes;
