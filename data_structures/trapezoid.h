@@ -11,13 +11,12 @@ public:
     // TODO: define constructor and methods
     Trapezoid();
 
-private:
     // Trapezoid identifiers
-    size_t idx_edgeTop, idx_edgeBottom;
-    size_t idx_pointLeft, idx_pointRight;
+    size_t idxEdgeTop, idxEdgeBottom;
+    size_t idxPointLeft, idxPointRight;
     // Adjacencies
-    size_t idx_trapezoidTopRight, idx_trapezoidTopLeft,
-           idx_trapezoidBottomLeft, idx_trapezoidBottomRight;
+    size_t idxTrapezoidTopRight, idxTrapezoidTopLeft,
+           idxTrapezoidBottomLeft, idxTrapezoidBottomRight;
 };
 
 } // End namespace gasprj

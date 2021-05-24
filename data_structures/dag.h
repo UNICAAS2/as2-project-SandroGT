@@ -1,6 +1,7 @@
 #ifndef DAG_H
 #define DAG_H
 
+#include <unordered_map>
 #include <vector>
 
 namespace gasprj {
@@ -35,6 +36,7 @@ public:
 
 private:
     std::vector<DAGNode> nodes;
+    std::unordered_map<size_t, size_t> leafMap;
 };
 
 } // End namespace gasprj
