@@ -17,7 +17,6 @@ public:
 
     gasprj::Trapezoid& getTrapezoid(size_t idx);
 
-private:
     std::vector<gasprj::Trapezoid> trapezoids;
 };
 

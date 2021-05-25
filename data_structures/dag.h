@@ -19,7 +19,6 @@ public:
     size_t getIdxNodeLeft();
     size_t getIdxNodeRight();
 
-private:
     NodeType typeInfo;
     size_t idxInfo;
     size_t idxNodeLeft, idxNodeRight;
@@ -34,7 +33,6 @@ public:
     const DAGNode& getRoot() const;
     const std::vector<DAGNode>& getNodes() const;
 
-private:
     std::vector<DAGNode> nodes;
     std::unordered_map<size_t, size_t> leafMap;
 };
