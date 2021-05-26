@@ -10,6 +10,7 @@
 
 #include <cg3/geometry/segment2.h>
 
+#include "data_structures/dag.h"
 #include "drawables/drawable_trapezoidalmap_dataset.h"
 #include "drawables/drawable_trapezoidalmap.h"
 
@@ -58,6 +59,7 @@ private:
     //---------------------------------------------------------------------
     //Declare your attributes here
     gasprj::DrawableTrapezoidalMap drawableTrapezoidalMap;
+    gasprj::DAG dag;
 
 
 

@@ -65,7 +65,7 @@ size_t queryTrapezoidalMap(const cg3::Point2d& point, const TrapezoidalMapDatase
     return dagNode.getIdxInfo();
 }
 
-void addSegmentToTrapezoidalMap(cg3::Segment2d& segment, TrapezoidalMapDataset& trapMapData,
+void addSegmentToTrapezoidalMap(const cg3::Segment2d& segment, TrapezoidalMapDataset& trapMapData,
                                 gasprj::TrapezoidalMap& trapMap, gasprj::DAG& dag)
 {
     // Find the segment and its vertices
