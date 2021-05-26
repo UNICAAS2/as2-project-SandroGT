@@ -9,7 +9,7 @@
 
 namespace gasprj {
 
-#define NO_ID std::numeric_limits<size_t>()
+#define NO_ID std::numeric_limits<size_t>::max()
 
 class Trapezoid
 {

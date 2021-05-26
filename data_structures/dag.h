@@ -6,35 +6,49 @@
 
 namespace gasprj {
 
-enum class NodeType {XNode, YNode, TrapNode};
+enum class NodeType {XNode, YNode, Leaf};
 
 class DAGNode
 {
 public:
-    // TODO: define constructor
-    DAGNode();
+    DAGNode(NodeType typeInfo, size_t idInfo, size_t idNodeL, size_t idNodeR);
 
     NodeType getNodeType();
-    size_t getIdxInfo();
-    size_t getIdxNodeLeft();
-    size_t getIdxNodeRight();
+    void setNodeType(NodeType nodeType);
 
+    size_t getIdInfo() const;
+    void setIdInfo(size_t id);
+
+    size_t getIdNodeL() const;
+    void setIdNodeL(size_t id);
+    size_t getIdNodeR() const;
+    void setIdNodeR(size_t id);
+
+private:
     NodeType typeInfo;
-    size_t idxInfo;
-    size_t idxNodeLeft, idxNodeRight;
+    size_t idInfo, idNodeL, idNodeR;
 };
 
 class DAG
 {
 public:
-    // TODO: define constructor
     DAG();
 
     const DAGNode& getRoot() const;
+    const DAGNode& getNode(size_t id) const;
     const std::vector<DAGNode>& getNodes() const;
+    void addNode(DAGNode& node);
 
+    size_t findLeaf(size_t trapezoidId);
+    void mapLeaf(size_t trapezoidId, size_t nodeId);
+    void remapLeaf(size_t trapezoidId, size_t nodeId);
+
+    void clear();
+
+private:
     std::vector<DAGNode> nodes;
-    std::unordered_map<size_t, size_t> leafMap;
+
+    std::unordered_map<size_t, size_t> leavesMap;
 };
 
 } // End namespace gasprj
