@@ -5,6 +5,8 @@
 #include <utility>
 #include <vector>
 
+#include <cg3/geometry/bounding_box2.h>
+
 #include "data_structures/trapezoid.h"
 
 namespace gasprj {
@@ -12,12 +14,20 @@ namespace gasprj {
 class TrapezoidalMap
 {
 public:
-    // TODO: define constructor
-    TrapezoidalMap();
+    TrapezoidalMap(cg3::Point2d boundingBoxCornerTL,
+                   cg3::Point2d boundingBoxCornerBR);
 
-    gasprj::Trapezoid& getTrapezoid(size_t idx);
+    Trapezoid& getTrapezoid(size_t id);
+    const std::vector<gasprj::Trapezoid>& getTrapezoids() const;
 
+    const cg3::BoundingBox2& getBoundingBox() const;
+
+    void clear();
+
+private:
     std::vector<gasprj::Trapezoid> trapezoids;
+
+    cg3::BoundingBox2 boundingBox;
 };
 
 } // End namespace gasprj

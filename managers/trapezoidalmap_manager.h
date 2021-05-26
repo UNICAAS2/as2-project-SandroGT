@@ -11,6 +11,7 @@
 #include <cg3/geometry/segment2.h>
 
 #include "drawables/drawable_trapezoidalmap_dataset.h"
+#include "drawables/drawable_trapezoidalmap.h"
 
 namespace Ui {
     class TrapezoidalMapManager;
@@ -56,7 +57,7 @@ private:
 
     //---------------------------------------------------------------------
     //Declare your attributes here
-
+    gasprj::DrawableTrapezoidalMap drawableTrapezoidalMap;
 
 
 

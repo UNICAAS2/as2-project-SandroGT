@@ -1,6 +1,10 @@
 #include "trapezoid.h"
 
-gasprj::Trapezoid::Trapezoid()
+namespace gasprj {
+
+Trapezoid::Trapezoid()
 {
+
+}
 
 }
