@@ -13,56 +13,128 @@ void crossedTrapezoids(const cg3::Segment2d& segment, const TrapezoidalMapDatase
 size_t queryTrapezoidalMap(const cg3::Point2d& point, const TrapezoidalMapDataset& trapMapData,
                            const gasprj::DAG& dag)
 {
-    // !!!: getRoot returns a const reference, but I'll have to change dagNode. Everything ok?!?
+    // TODO: find a way to apply the const correctness and use the pass-by-reference to avoid the
+    // copy of nodes
     DAGNode dagNode = dag.getRoot();
-
     // Scroll the DAG until a leaf is reached
-    while(dagNode.getNodeType() != gasprj::NodeType::TrapNode) {
+    while(dagNode.getNodeType() != gasprj::NodeType::Leaf) {
         // Check if the actual node is a x-node (vertex) or a y-node (segment)
         switch(dagNode.getNodeType()) {
+            // Point-Vertex comparison
             case gasprj::NodeType::XNode: {
-                // Point-Vertex comparison
-                const cg3::Point2d vertex = trapMapData.getPoint(dagNode.getIdxInfo());
+                const cg3::Point2d& vertex = trapMapData.getPoint(dagNode.getIdInfo());
+                // Query point to the left of the segment vertex
                 if (point.x() < vertex.x()) {
-                    dagNode = dag.getNodes()[dagNode.getIdxNodeLeft()];
+                    dagNode = dag.getNode(dagNode.getIdNodeL());
                 }
-                else if (point.x() > vertex.x()) {
-                    dagNode = dag.getNodes()[dagNode.getIdxNodeRight()];
-                }
+                // Query point either to the right or in the same vertical extension of the vertex:
+                // in both cases we treat it as being at the right (for real or conceptually)
                 else {
-                    // Query point is not allowed to have the same x-coordinate of a vertex
-                    assert(false);
+                    dagNode = dag.getNode(dagNode.getIdNodeR());
                 }
                 break;
             }
+            // Point-Segment comparison
             case gasprj::NodeType::YNode: {
-                // Point-Segment comparison
-                cg3::Segment2d segment = trapMapData.getSegment(dagNode.getIdxInfo());
-                // !!!: not sure about taking the segment, maybe the indexed segment is better ?!?
+                const cg3::Segment2d& segment = trapMapData.getSegment(dagNode.getIdInfo());
+                // Query point above the segment
                 if (cg3::isPointAtLeft(segment, point)) {
-                    dagNode = dag.getNodes()[dagNode.getIdxNodeLeft()];
+                    assert(segment.p1() != point);
+                    dagNode = dag.getNode(dagNode.getIdNodeL());
                 }
+                // Query point below the segment
                 else if (cg3::isPointAtRight(segment, point)) {
-                    dagNode = dag.getNodes()[dagNode.getIdxNodeRight()];
+                    assert(segment.p1() != point);
+                    dagNode = dag.getNode(dagNode.getIdNodeR());
                 }
+                // Query point lying on the segment
                 else {
-                    // Query point is not allowed to lay on a segment
                     assert(false);
                 }
                 break;
             }
             default: {
-                // Unreachable
+                // Unreachable: should not reach this with a leaf
                 assert(false);
             }
         }
     }
 
     // At this point the node must be a leaf
-    assert(dagNode.getNodeType() == gasprj::NodeType::TrapNode);
+    assert(dagNode.getNodeType() == gasprj::NodeType::Leaf);
 
-    // Return the index of the trapezoid (it will need to be changed for sure)
-    return dagNode.getIdxInfo();
+    // Return the index of the trapezoid
+    return dagNode.getIdInfo();
+}
+
+size_t queryTrapezoidalMap(const cg3::Segment2d& newSegment, const TrapezoidalMapDataset& trapMapData,
+                           const gasprj::DAG& dag) {
+    // TODO: find a way to apply the const correctness and use the pass-by-reference to avoid the
+    // copy of nodes
+    DAGNode dagNode = dag.getRoot();
+    // Scroll the DAG until a leaf is reached
+    while(dagNode.getNodeType() != gasprj::NodeType::Leaf) {
+        // Check if the actual node is a x-node (vertex) or a y-node (segment)
+        switch(dagNode.getNodeType()) {
+            // Point-Vertex comparison
+            case gasprj::NodeType::XNode: {
+                const cg3::Point2d& vertex = trapMapData.getPoint(dagNode.getIdInfo());
+                // Query point to the left of the segment vertex
+                if (newSegment.p1().x() < vertex.x()) {
+                    dagNode = dag.getNode(dagNode.getIdNodeL());
+                }
+                // Query point either to the right or in the same vertical extension of the vertex:
+                // in both cases we treat it as being at the right (for real or conceptually)
+                else {
+                    dagNode = dag.getNode(dagNode.getIdNodeR());
+                }
+                break;
+            }
+            // Point-Segment comparison
+            case gasprj::NodeType::YNode: {
+                const cg3::Segment2d& segment = trapMapData.getSegment(dagNode.getIdInfo());
+                // Query point above the segment
+                if (cg3::isPointAtLeft(segment, newSegment.p1())) {
+                    assert(segment.p1() != newSegment.p1());
+                    dagNode = dag.getNode(dagNode.getIdNodeL());
+                }
+                // Query point below the segment
+                else if (cg3::isPointAtRight(segment, newSegment.p1())) {
+                    assert(segment.p1() != newSegment.p1());
+                    dagNode = dag.getNode(dagNode.getIdNodeR());
+                }
+                // Query point lying on the segment: this happens when the query point is also the
+                // left endpoint of the segment. Compare the slopes of the two segments to check
+                // where the query continues
+                else {
+                    assert(segment.p1() == newSegment.p1());
+                    // New segment slope is larger, continue above
+                    if (cg3::isPointAtLeft(segment, newSegment.p2())) {
+                        dagNode = dag.getNode(dagNode.getIdNodeL());
+                    }
+                    // New segment slope is smaller, continue below
+                    else if (cg3::isPointAtRight(segment, newSegment.p2())) {
+                        dagNode = dag.getNode(dagNode.getIdNodeR());
+                    }
+                    else {
+                        // Overlapping segments
+                        assert(false);
+                    }
+                }
+                break;
+            }
+            default: {
+                // Unreachable: should not reach this with a leaf
+                assert(false);
+            }
+        }
+    }
+
+    // At this point the node must be a leaf
+    assert(dagNode.getNodeType() == gasprj::NodeType::Leaf);
+
+    // Return the index of the trapezoid
+    return dagNode.getIdInfo();
 }
 
 void addSegmentToTrapezoidalMap(const cg3::Segment2d& segment, TrapezoidalMapDataset& trapMapData,
@@ -219,24 +291,27 @@ void crossedTrapezoids(const cg3::Segment2d& segment, const TrapezoidalMapDatase
     // Need an empty vector
     assert(traversedTraps.size() == 0);
 
-    // Search for the trapezoid in which the left vertex of the segment lays
-    size_t idxTrap = queryTrapezoidalMap(segment.p1(), trapMapData, dag);
-    cg3::Point2d trapRightPoint = trapMapData.getPoint(trapMap.getTrapezoid(idxTrap).idxPointRight);
+    // Search for the trapezoid in which the left vertex of the segment lies
+    size_t idTrap = queryTrapezoidalMap(segment, trapMapData, dag);
+    cg3::Point2d trapezoidPointR = trapMapData.getPoint(trapMap.getTrapezoid(idTrap).getIdPointR());
 
-    traversedTraps.push_back(idxTrap);
-    while(segment.p2().x() > trapRightPoint.x()) {
-        if (cg3::isPointAtLeft(segment, trapRightPoint)) {
-            idxTrap = trapMap.getTrapezoid(idxTrap).idxTrapezoidBottomRight;
+    // Search for all the crossed trapezoids and save their IDs in the vector
+    traversedTraps.push_back(idTrap);
+    while(segment.p2().x() > trapezoidPointR.x()) {
+        // If the right point of the trapezoid lies above the segment, move to the bottom-right adjacency
+        if (cg3::isPointAtLeft(segment, trapezoidPointR)) {
+            idTrap = trapMap.getTrapezoid(idTrap).getIdTrapezoidBR();
         }
-        else if (cg3::isPointAtRight(segment, trapRightPoint)) {
-            idxTrap = trapMap.getTrapezoid(idxTrap).idxTrapezoidTopRight;
+        // If the right point of the trapezoid lies below the segment, move to the top-right adjacency
+        else if (cg3::isPointAtRight(segment, trapezoidPointR)) {
+            idTrap = trapMap.getTrapezoid(idTrap).getIdTrapezoidTR();
         }
+        // Point lies on a segment
         else {
-            // Point lies on a segment
             assert(false);
         }
-        trapRightPoint = trapMapData.getPoint(trapMap.getTrapezoid(idxTrap).idxPointRight);
-        traversedTraps.push_back(idxTrap);
+        trapezoidPointR = trapMapData.getPoint(trapMap.getTrapezoid(idTrap).getIdPointR());
+        traversedTraps.push_back(idTrap);
     }
 }
 
