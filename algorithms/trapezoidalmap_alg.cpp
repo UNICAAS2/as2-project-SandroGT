@@ -172,6 +172,12 @@ void crossedTrapezoids(const cg3::Segment2d& segment, const TrapezoidalMapDatase
 void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMapDataset& trapMapData,
                                 gasprj::TrapezoidalMap& trapMap, gasprj::DAG& dag)
 {
+    // Finds the IDs of the new segment and of its endpoints
+    bool found;
+    size_t idNewSegment = trapMapData.findSegment(newSegment, found);
+    size_t idNewSegmentP1 = trapMapData.findPoint(newSegment.p1(), found);
+    size_t idNewSegmentP2 = trapMapData.findPoint(newSegment.p2(), found);
+
     // Find the trapezoids traversed by the new segment
     std::vector<size_t> traversedTraps = std::vector<size_t>();
     crossedTrapezoids(newSegment, trapMapData, trapMap, dag, traversedTraps);
@@ -185,6 +191,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
         size_t idTrapezoid = traversedTraps[0];
         gasprj::Trapezoid trapezoid = trapMap.getTrapezoid(idTrapezoid);
 
+
         //--- Trapezoidal Map update
 
         // Check the geometry conditions
@@ -195,25 +202,72 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
         bool isRVertexTEnd = trapMapData.getSegment(trapezoid.getIdSegmentT()).p2() == trapMapData.getPoint(trapezoid.getIdPointR());
         bool isRVertexBEnd = trapMapData.getSegment(trapezoid.getIdSegmentB()).p2() == trapMapData.getPoint(trapezoid.getIdPointR());
 
-        // New trapezoid IDs
-        size_t idLastUsed = idTrapezoid;
-        size_t idNewTrapL = NO_ID;
-        size_t idNewTrapT = NO_ID;
-        size_t idNewTrapB = NO_ID;
-        size_t idNewTrapR = NO_ID;
 
+        // Define the IDs for the new trapezoids that have to be created
+        size_t idNewTrapL = NO_ID, idNewTrapT = NO_ID, idNewTrapB = NO_ID, idNewTrapR = NO_ID;
         // If the left point of the new segment do not overlap with the left point of the trapezoid,
         // then we have a left trapezoid
-        if (!overlapL) {
-            // Assign ID to left trapezoid
-        }
+        if (!overlapL) idNewTrapL = idTrapezoid;
+        // There always is a top trapezoid
+        idNewTrapT = overlapL ? idTrapezoid : trapMap.getNumberTrapezoids();
+        // There always is a bottom trapezoid
+        idNewTrapB = idNewTrapT+1;
         // If the right point of the new segment do not overlap with the right point of the trapezoid,
         // then we have a right trapezoid
-        if (!overlapR) {
-            // Assign ID to right trapezoid
+        if (!overlapR) idNewTrapR = idNewTrapB+1;
+
+
+        // Create the new trapezoids and add them to the trapezoidal map
+        gasprj::Trapezoid newTrap;
+
+        // Left trapezoid
+        if (!overlapL) {
+            newTrap = trapezoid;
+            newTrap.setIdPointR(idNewSegmentP1);
+            newTrap.setIdTrapezoidTR(idNewTrapT);
+            newTrap.setIdTrapezoidBR(idNewTrapB);
+            newTrap.updateVertices(trapMapData);
+            trapMap.overwriteTrapezoid(newTrap, idNewTrapL);
         }
-        // We always have the top and bottom trapezoids
-        // Assign ID to top and bottom trapezoid
+
+        // Top trapezoid
+        newTrap = trapezoid;
+        newTrap.setIdSegmentB(idNewSegment);
+        newTrap.setIdPointL(idNewSegmentP1);
+        newTrap.setIdPointR(idNewSegmentP2);
+        newTrap.setIdTrapezoidBL(NO_ID);
+        newTrap.setIdTrapezoidBR(NO_ID);
+        if (!overlapL) newTrap.setIdTrapezoidTL(idNewTrapL);
+        else if (isLVertexTEnd) newTrap.setIdTrapezoidTL(NO_ID);
+        if (!overlapR) newTrap.setIdTrapezoidTR(idNewTrapR);
+        else if (isRVertexTEnd) newTrap.setIdTrapezoidTR(NO_ID);
+        newTrap.updateVertices(trapMapData);
+        if (overlapL) trapMap.overwriteTrapezoid(newTrap, idNewTrapT);
+        else trapMap.addNewTrapezoid(newTrap);
+
+        // Bottom trapezoid
+        newTrap = trapezoid;
+        newTrap.setIdSegmentT(idNewSegment);
+        newTrap.setIdPointL(idNewSegmentP1);
+        newTrap.setIdPointR(idNewSegmentP2);
+        newTrap.setIdTrapezoidTL(NO_ID);
+        newTrap.setIdTrapezoidTR(NO_ID);
+        if (!overlapL) newTrap.setIdTrapezoidBL(idNewTrapL);
+        else if (isLVertexBEnd) newTrap.setIdTrapezoidBL(NO_ID);
+        if (!overlapR) newTrap.setIdTrapezoidBR(idNewTrapR);
+        else if (isRVertexBEnd) newTrap.setIdTrapezoidBR(NO_ID);
+        newTrap.updateVertices(trapMapData);
+        trapMap.addNewTrapezoid(newTrap);
+
+        // Right trapezoid
+        if (!overlapR) {
+            newTrap = trapezoid;
+            newTrap.setIdPointL(idNewSegmentP2);
+            newTrap.setIdTrapezoidTL(idNewTrapT);
+            newTrap.setIdTrapezoidBL(idNewTrapB);
+            newTrap.updateVertices(trapMapData);
+            trapMap.addNewTrapezoid(newTrap);
+        }
 
     }
     else {

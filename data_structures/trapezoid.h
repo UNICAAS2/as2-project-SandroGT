@@ -34,7 +34,7 @@ public:
     size_t getIdTrapezoidBL();
     void setIdTrapezoidBL(size_t id);
 
-    void updateVertices(TrapezoidalMapDataset trapMapData);
+    void updateVertices(TrapezoidalMapDataset& trapMapData);
     const cg3::Point2d& getVertexTL() const;
     const cg3::Point2d& getVertexTR() const;
     const cg3::Point2d& getVertexBR() const;
@@ -47,7 +47,7 @@ private:
     // Adjacencies
     size_t idTrapezoidTL, idxTrapezoidTR, idTrapezoidBR, idxTrapezoidBL;
 
-    // Own vertices (precomputed for efficiency)
+    // Polygon vertices (precomputed for efficiency)
     cg3::Point2d vertexTL, vertexTR, vertexBR, vertexBL;
 };
 

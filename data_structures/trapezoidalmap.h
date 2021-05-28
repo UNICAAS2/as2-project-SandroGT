@@ -18,7 +18,10 @@ public:
                    cg3::Point2d boundingBoxCornerBR);
 
     Trapezoid& getTrapezoid(size_t id);
-    const std::vector<gasprj::Trapezoid>& getTrapezoids() const;
+    std::vector<gasprj::Trapezoid>& getTrapezoids();
+    void addNewTrapezoid(gasprj::Trapezoid& newTrap);
+    void overwriteTrapezoid(gasprj::Trapezoid& newTrap, size_t id);
+    size_t getNumberTrapezoids();
 
     const cg3::BoundingBox2& getBoundingBox() const;
 
