@@ -191,8 +191,10 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
         size_t idTrapezoid = traversedTraps[0];
         gasprj::Trapezoid trapezoid = trapMap.getTrapezoid(idTrapezoid);
 
+        // DAG leaf of interest
+        size_t idLeaf = dag.findLeaf(idTrapezoid);
+        gasprj::DAGNode leaf = dag.getNode(idLeaf);
 
-        //--- Trapezoidal Map update
 
         // Check the geometry conditions
         bool overlapL = newSegment.p1() == trapMapData.getPoint(trapezoid.getIdPointL());
@@ -203,8 +205,11 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
         bool isRVertexBEnd = trapMapData.getSegment(trapezoid.getIdSegmentB()).p2() == trapMapData.getPoint(trapezoid.getIdPointR());
 
 
-        // Define the IDs for the new trapezoids that have to be created
+        //--- Trapezoidal Map update
+
+        // Define the IDs for the new trapezoids that could to be created
         size_t idNewTrapL = NO_ID, idNewTrapT = NO_ID, idNewTrapB = NO_ID, idNewTrapR = NO_ID;
+
         // If the left point of the new segment do not overlap with the left point of the trapezoid,
         // then we have a left trapezoid
         if (!overlapL) idNewTrapL = idTrapezoid;
@@ -269,9 +274,61 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
             trapMap.addNewTrapezoid(newTrap);
         }
 
+        //--- End Trapezoidal Map update
+
+
+        //--- DAG Update
+
+        // Define the IDs for the new nodes of the DAG that could to be created
+        size_t idNewNodeXL = NO_ID, idNewNodeXR = NO_ID, idNewNodeY = NO_ID,
+               idNewLeafL = NO_ID, idNewLeafT = NO_ID, idNewLeafB = NO_ID, idNewLeafR = NO_ID;
+
+        size_t idNext = idLeaf;
+        // If the left point of the new segment do not overlap with the left point of the trapezoid,
+        // then we have an X node for the left point of the new segment and a leaf for the new left trapezoid
+        if (!overlapL) idNewNodeXL = idLeaf, idNewLeafL = dag.getNumberNodes(), idNext = idNewLeafL+1;
+        // If the right point of the new segment do not overlap with the right point of the trapezoid,
+        // then we have an X node for the right point of the new segment and a leaf for the new right trapezoid
+        if (!overlapR) {
+            if (!overlapL) idNewNodeXR = idNewLeafL+1, idNewLeafR = idNewNodeXR+1;
+            else idNewNodeXR = idLeaf, idNewLeafR = dag.getNumberNodes();
+            idNext = idNewLeafR+1;
+        }
+        // There always is a Y node with the leaves for the new top and bottom trapezoids
+        idNewNodeY = idNext;
+        idNewLeafT = (overlapL && overlapR) ? dag.getNumberNodes() : idNewNodeY+1;
+        idNewLeafB=idNewLeafT+1;
+
+
+        // Create the new nodes and add them to the DAG
+        gasprj::DAGNode newNode;
+
+        // Structure related to the left trapezoid
+        if (!overlapL) {
+            newNode = DAGNode(gasprj::NodeType::XNode, idNewSegmentP1, idNewLeafL, overlapR ? idNewNodeY : idNewNodeXR);
+            dag.overwriteNode(newNode, idNewNodeXL);
+            newNode = DAGNode(gasprj::NodeType::Leaf, idNewTrapL, NO_ID, NO_ID);
+            dag.addNewNode(newNode);
+        }
+        // Structure related to the right trapezoid
+        if (!overlapR) {
+            newNode = DAGNode(gasprj::NodeType::XNode, idNewSegmentP2, idNewNodeY, idNewLeafR);
+            overlapL ? dag.overwriteNode(newNode, idNewNodeXR) : dag.addNewNode(newNode);
+            newNode = DAGNode(gasprj::NodeType::Leaf, idNewTrapR, NO_ID, NO_ID);
+            dag.addNewNode(newNode);
+        }
+        // Structure related to the top and bottom trapezoids
+        newNode = DAGNode(gasprj::NodeType::YNode, idNewSegment, idNewLeafT, idNewLeafB);
+        overlapL && overlapR ? dag.addNewNode(newNode) : dag.overwriteNode(newNode, idNewNodeY);
+        newNode = DAGNode(gasprj::NodeType::Leaf, idNewLeafT, NO_ID, NO_ID);
+        dag.addNewNode(newNode);
+        newNode = DAGNode(gasprj::NodeType::Leaf, idNewTrapB, NO_ID, NO_ID);
+        dag.addNewNode(newNode);
+
+        //--- End DAG Update
     }
     else {
-        
+        return;
     }
 }
 

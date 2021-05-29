@@ -49,7 +49,7 @@ DAG::DAG() :
 {
     // Add a first node representing the bounding box (one and only trapezoid at first)
     DAGNode firstNode = DAGNode(NodeType::Leaf, 0, NO_ID, NO_ID);
-    addNode(firstNode);
+    addNewNode(firstNode);
     mapLeaf(0, 0);
 }
 
@@ -65,9 +65,19 @@ const std::vector<DAGNode>& DAG::getNodes() const {
     return nodes;
 }
 
-void DAG::addNode(DAGNode& node) {
-    nodes.push_back(node);
+void DAG::addNewNode(DAGNode& newNode) {
+    nodes.push_back(newNode);
 }
+
+void DAG::overwriteNode(DAGNode& newNode, size_t id) {
+    assert(id < nodes.size());
+    nodes[id] = newNode;
+}
+
+size_t DAG::getNumberNodes() {
+    return nodes.size();
+}
+
 
 size_t DAG::findLeaf(size_t trapezoidId) {
     return leavesMap[trapezoidId];

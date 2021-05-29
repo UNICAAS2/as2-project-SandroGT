@@ -15,6 +15,8 @@ class Trapezoid
 {
 public:
     Trapezoid();
+    Trapezoid(size_t idSegmentT, size_t idSegmentB, size_t idPointL, size_t idPointR,
+              size_t idTrapezoidTL, size_t idxTrapezoidTR, size_t idTrapezoidBR, size_t idxTrapezoidBL);
 
     size_t getIdSegmentT();
     void setIdSegmentT(size_t id);

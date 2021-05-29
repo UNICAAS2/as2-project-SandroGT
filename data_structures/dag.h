@@ -11,6 +11,7 @@ enum class NodeType {XNode, YNode, Leaf};
 class DAGNode
 {
 public:
+    DAGNode();
     DAGNode(NodeType typeInfo, size_t idInfo, size_t idNodeL, size_t idNodeR);
 
     NodeType getNodeType();
@@ -37,7 +38,9 @@ public:
     const DAGNode& getRoot() const;
     const DAGNode& getNode(size_t id) const;
     const std::vector<DAGNode>& getNodes() const;
-    void addNode(DAGNode& node);
+    void addNewNode(DAGNode& newNode);
+    void overwriteNode(DAGNode& newNode, size_t id);
+    size_t getNumberNodes();
 
     size_t findLeaf(size_t trapezoidId);
     void mapLeaf(size_t trapezoidId, size_t nodeId);
