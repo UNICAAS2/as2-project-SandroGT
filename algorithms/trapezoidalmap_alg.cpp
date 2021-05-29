@@ -210,30 +210,20 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
         // Define the IDs for the new trapezoids that could to be created
         size_t idNewTrapL = NO_ID, idNewTrapT = NO_ID, idNewTrapB = NO_ID, idNewTrapR = NO_ID;
 
+        // There always is a top trapezoid
+        idNewTrapT = idTrapezoid;
+        // There always is a bottom trapezoid
+        idNewTrapB = trapMap.getNumberTrapezoids();
         // If the left point of the new segment do not overlap with the left point of the trapezoid,
         // then we have a left trapezoid
-        if (!overlapL) idNewTrapL = idTrapezoid;
-        // There always is a top trapezoid
-        idNewTrapT = overlapL ? idTrapezoid : trapMap.getNumberTrapezoids();
-        // There always is a bottom trapezoid
-        idNewTrapB = idNewTrapT+1;
+        if (!overlapL) idNewTrapL = idNewTrapB+1;
         // If the right point of the new segment do not overlap with the right point of the trapezoid,
         // then we have a right trapezoid
-        if (!overlapR) idNewTrapR = idNewTrapB+1;
+        if (!overlapR) idNewTrapR = idNewTrapL+1;
 
 
         // Create the new trapezoids and add them to the trapezoidal map
         gasprj::Trapezoid newTrap;
-
-        // Left trapezoid
-        if (!overlapL) {
-            newTrap = trapezoid;
-            newTrap.setIdPointR(idNewSegmentP1);
-            newTrap.setIdTrapezoidTR(idNewTrapT);
-            newTrap.setIdTrapezoidBR(idNewTrapB);
-            newTrap.updateVertices(trapMapData);
-            trapMap.overwriteTrapezoid(newTrap, idNewTrapL);
-        }
 
         // Top trapezoid
         newTrap = trapezoid;
@@ -247,8 +237,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
         if (!overlapR) newTrap.setIdTrapezoidTR(idNewTrapR);
         else if (isRVertexTEnd) newTrap.setIdTrapezoidTR(NO_ID);
         newTrap.updateVertices(trapMapData);
-        if (overlapL) trapMap.overwriteTrapezoid(newTrap, idNewTrapT);
-        else trapMap.addNewTrapezoid(newTrap);
+        trapMap.overwriteTrapezoid(newTrap, idNewTrapT);
 
         // Bottom trapezoid
         newTrap = trapezoid;
@@ -263,6 +252,16 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
         else if (isRVertexBEnd) newTrap.setIdTrapezoidBR(NO_ID);
         newTrap.updateVertices(trapMapData);
         trapMap.addNewTrapezoid(newTrap);
+
+        // Left trapezoid
+        if (!overlapL) {
+            newTrap = trapezoid;
+            newTrap.setIdPointR(idNewSegmentP1);
+            newTrap.setIdTrapezoidTR(idNewTrapT);
+            newTrap.setIdTrapezoidBR(idNewTrapB);
+            newTrap.updateVertices(trapMapData);
+            trapMap.addNewTrapezoid(newTrap);
+        }
 
         // Right trapezoid
         if (!overlapR) {
@@ -309,6 +308,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
             dag.overwriteNode(newNode, idNewNodeXL);
             newNode = DAGNode(gasprj::NodeType::Leaf, idNewTrapL, NO_ID, NO_ID);
             dag.addNewNode(newNode);
+            dag.mapLeaf(idNewTrapL, idNewLeafL);
         }
         // Structure related to the right trapezoid
         if (!overlapR) {
@@ -316,6 +316,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
             overlapL ? dag.overwriteNode(newNode, idNewNodeXR) : dag.addNewNode(newNode);
             newNode = DAGNode(gasprj::NodeType::Leaf, idNewTrapR, NO_ID, NO_ID);
             dag.addNewNode(newNode);
+            dag.mapLeaf(idNewTrapR, idNewLeafR);
         }
         // Structure related to the top and bottom trapezoids
         newNode = DAGNode(gasprj::NodeType::YNode, idNewSegment, idNewLeafT, idNewLeafB);
@@ -323,7 +324,9 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
         newNode = DAGNode(gasprj::NodeType::Leaf, idNewLeafT, NO_ID, NO_ID);
         dag.addNewNode(newNode);
         newNode = DAGNode(gasprj::NodeType::Leaf, idNewTrapB, NO_ID, NO_ID);
+        dag.remapLeaf(idNewTrapT, idNewLeafT);
         dag.addNewNode(newNode);
+        dag.mapLeaf(idNewTrapB, idNewLeafB);
 
         //--- End DAG Update
     }
