@@ -3,8 +3,6 @@
 
 #include <vector>
 
-#include <cg3/geometry/point2.h>
-
 #include "data_structures/trapezoidalmap_dataset.h"
 
 namespace gasprj {
@@ -15,8 +13,6 @@ class Trapezoid
 {
 public:
     Trapezoid();
-    Trapezoid(size_t idSegmentT, size_t idSegmentB, size_t idPointL, size_t idPointR,
-              size_t idTrapezoidTL, size_t idxTrapezoidTR, size_t idTrapezoidBR, size_t idxTrapezoidBL);
 
     size_t getIdSegmentT();
     void setIdSegmentT(size_t id);
@@ -47,7 +43,7 @@ private:
     size_t idSegmentT, idSegmentB, idPointL, idPointR;
 
     // Adjacencies
-    size_t idTrapezoidTL, idxTrapezoidTR, idTrapezoidBR, idxTrapezoidBL;
+    size_t idTrapezoidTL, idTrapezoidTR, idTrapezoidBR, idTrapezoidBL;
 
     // Polygon vertices (precomputed for efficiency)
     cg3::Point2d vertexTL, vertexTR, vertexBR, vertexBL;
