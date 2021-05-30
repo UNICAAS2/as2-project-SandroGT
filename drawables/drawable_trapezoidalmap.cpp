@@ -17,8 +17,11 @@ void DrawableTrapezoidalMap::draw() const
     std::srand(0);
     size_t i = 0;
     for (const gasprj::Trapezoid& trapezoid : getTrapezoids()) {
+        double r = double(std::rand()) / RAND_MAX;
+        double g = double(std::rand()) / RAND_MAX;
+        double b = double(std::rand()) / RAND_MAX;
         // Draw a trapezoid as a 4 vertex polygon, with random colors
-        glColor4d(std::rand(), std::rand(), std::rand(), i == highlightedTrapezoidId ? 0.80 : 0.20);
+        glColor4d(r, g, b, i == highlightedTrapezoidId ? 1.0 : 0.2);
         glBegin(GL_POLYGON);
         glVertex2d(trapezoid.getVertexTL().x(), trapezoid.getVertexTL().y());
         glVertex2d(trapezoid.getVertexTR().x(), trapezoid.getVertexTR().y());
