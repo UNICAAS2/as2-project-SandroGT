@@ -4,6 +4,11 @@
 
 namespace gasprj {
 
+DAGNode::DAGNode()
+{
+
+}
+
 DAGNode::DAGNode(NodeType typeInfo, size_t idInfo, size_t idNodeL, size_t idNodeR) :
     typeInfo(typeInfo), idInfo(idInfo), idNodeL(idNodeL), idNodeR(idNodeR)
 {

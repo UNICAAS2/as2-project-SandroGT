@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include <cg3/geometry/bounding_box2.h>
+
 #include "data_structures/trapezoidalmap_dataset.h"
 
 namespace gasprj {
@@ -32,7 +34,8 @@ public:
     size_t getIdTrapezoidBL();
     void setIdTrapezoidBL(size_t id);
 
-    void updateVertices(TrapezoidalMapDataset& trapMapData);
+    void updateVertices(const cg3::BoundingBox2 boundingBox);
+    void updateVertices(const TrapezoidalMapDataset& trapMapData, const cg3::BoundingBox2 boundingBox);
     const cg3::Point2d& getVertexTL() const;
     const cg3::Point2d& getVertexTR() const;
     const cg3::Point2d& getVertexBR() const;

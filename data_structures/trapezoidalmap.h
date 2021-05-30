@@ -14,11 +14,11 @@ namespace gasprj {
 class TrapezoidalMap
 {
 public:
-    TrapezoidalMap(cg3::Point2d boundingBoxCornerTL,
-                   cg3::Point2d boundingBoxCornerBR);
+    TrapezoidalMap(cg3::Point2d boundingBoxCornerBL,
+                   cg3::Point2d boundingBoxCornerTR);
 
     Trapezoid& getTrapezoid(size_t id);
-    std::vector<gasprj::Trapezoid>& getTrapezoids();
+    const std::vector<gasprj::Trapezoid>& getTrapezoids() const;
     void addNewTrapezoid(gasprj::Trapezoid& newTrap);
     void overwriteTrapezoid(gasprj::Trapezoid& newTrap, size_t id);
     size_t getNumberTrapezoids();

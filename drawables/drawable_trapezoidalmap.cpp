@@ -4,9 +4,9 @@
 
 namespace gasprj {
 
-DrawableTrapezoidalMap::DrawableTrapezoidalMap(cg3::Point2d boundingBoxCornerTL,
-                                               cg3::Point2d boundingBoxCornerBR) :
-    TrapezoidalMap(boundingBoxCornerTL, boundingBoxCornerBR)
+DrawableTrapezoidalMap::DrawableTrapezoidalMap(cg3::Point2d boundingBoxCornerBL,
+                                               cg3::Point2d boundingBoxCornerTR) :
+    TrapezoidalMap(boundingBoxCornerBL, boundingBoxCornerTR)
 {
 
 }

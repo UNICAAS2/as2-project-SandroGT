@@ -252,7 +252,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
         else if (isLVertexTEnd) newTrap.setIdTrapezoidTL(NO_ID);
         if (!overlapR) newTrap.setIdTrapezoidTR(idNewTrapR);
         else if (isRVertexTEnd) newTrap.setIdTrapezoidTR(NO_ID);
-        newTrap.updateVertices(trapMapData);
+        newTrap.updateVertices(trapMapData, trapMap.getBoundingBox());
         trapMap.overwriteTrapezoid(newTrap, idNewTrapT);
 
         // Bottom trapezoid
@@ -266,7 +266,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
         else if (isLVertexBEnd) newTrap.setIdTrapezoidBL(NO_ID);
         if (!overlapR) newTrap.setIdTrapezoidBR(idNewTrapR);
         else if (isRVertexBEnd) newTrap.setIdTrapezoidBR(NO_ID);
-        newTrap.updateVertices(trapMapData);
+        newTrap.updateVertices(trapMapData, trapMap.getBoundingBox());
         trapMap.addNewTrapezoid(newTrap);
 
         // Left trapezoid
@@ -275,7 +275,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
             newTrap.setIdPointR(idNewSegmentP1);
             newTrap.setIdTrapezoidTR(idNewTrapT);
             newTrap.setIdTrapezoidBR(idNewTrapB);
-            newTrap.updateVertices(trapMapData);
+            newTrap.updateVertices(trapMapData, trapMap.getBoundingBox());
             trapMap.addNewTrapezoid(newTrap);
         }
 
@@ -285,7 +285,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
             newTrap.setIdPointL(idNewSegmentP2);
             newTrap.setIdTrapezoidTL(idNewTrapT);
             newTrap.setIdTrapezoidBL(idNewTrapB);
-            newTrap.updateVertices(trapMapData);
+            newTrap.updateVertices(trapMapData, trapMap.getBoundingBox());
             trapMap.addNewTrapezoid(newTrap);
         }
 
@@ -396,7 +396,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
             newTrap.setIdPointR(idNewSegmentP1);
             newTrap.setIdTrapezoidTR(idNewTrapT);
             newTrap.setIdTrapezoidBR(idNewTrapB);
-            newTrap.updateVertices(trapMapData);
+            newTrap.updateVertices(trapMapData, trapMap.getBoundingBox());
             trapMap.addNewTrapezoid(newTrap);
         }
 
@@ -465,7 +465,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
                 // The previous top trapezoid has come to an end, add it to the trapezoidal map
                 previousTrapT.setIdTrapezoidBR(idNewTrapT);
                 previousTrapT.setIdPointR(trapezoid.getIdPointL());
-                previousTrapT.updateVertices(trapMapData);
+                previousTrapT.updateVertices(trapMapData, trapMap.getBoundingBox());
                 if (idPreviousTrapT < trapMap.getNumberTrapezoids()) trapMap.overwriteTrapezoid(previousTrapT, idPreviousTrapT);
                 else trapMap.addNewTrapezoid(previousTrapT);
                 // Create the new top trapezoid
@@ -481,7 +481,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
                 // The previous bottom trapezoid has come to an end, add it to the trapezoidal map
                 previousTrapB.setIdTrapezoidTR(idNewTrapB);
                 previousTrapB.setIdPointR(trapezoid.getIdPointL());
-                previousTrapB.updateVertices(trapMapData);
+                previousTrapB.updateVertices(trapMapData, trapMap.getBoundingBox());
                 if (idPreviousTrapB < trapMap.getNumberTrapezoids()) trapMap.overwriteTrapezoid(previousTrapB, idPreviousTrapB);
                 else trapMap.addNewTrapezoid(previousTrapB);
                 // Create the new bottom trapezoid
@@ -548,7 +548,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
             // The previous top trapezoid has come to an end, add it to the trapezoidal map
             previousTrapT.setIdTrapezoidBR(idNewTrapT);
             previousTrapT.setIdPointR(trapezoid.getIdPointL());
-            previousTrapT.updateVertices(trapMapData);
+            previousTrapT.updateVertices(trapMapData, trapMap.getBoundingBox());
             if (idPreviousTrapT < trapMap.getNumberTrapezoids()) trapMap.overwriteTrapezoid(previousTrapT, idPreviousTrapT);
             else trapMap.addNewTrapezoid(previousTrapT);
             // The previous bottom trapezoid has come to an end too, add it to the trapezoidal map
@@ -578,7 +578,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
             // The previous bottom trapezoid has come to an end, add it to the trapezoidal map
             previousTrapB.setIdTrapezoidTR(idNewTrapB);
             previousTrapB.setIdPointR(trapezoid.getIdPointL());
-            previousTrapB.updateVertices(trapMapData);
+            previousTrapB.updateVertices(trapMapData, trapMap.getBoundingBox());
             if (idPreviousTrapB < trapMap.getNumberTrapezoids()) trapMap.overwriteTrapezoid(previousTrapB, idPreviousTrapB);
             else trapMap.addNewTrapezoid(previousTrapB);
             // The previous top trapezoid has come to an end too, add it to the trapezoidal map
@@ -608,7 +608,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
             newTrap.setIdPointL(idNewSegmentP2);
             newTrap.setIdTrapezoidTL(idPreviousTrapT);
             newTrap.setIdTrapezoidBL(idPreviousTrapB);
-            newTrap.updateVertices(trapMapData);
+            newTrap.updateVertices(trapMapData, trapMap.getBoundingBox());
             trapMap.addNewTrapezoid(newTrap);
         }
 

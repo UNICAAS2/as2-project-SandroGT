@@ -2,18 +2,22 @@
 
 namespace gasprj {
 
-TrapezoidalMap::TrapezoidalMap(cg3::Point2d boundingBoxCornerTL,
-                               cg3::Point2d boundingBoxCornerBR):
-    boundingBox(cg3::Point2d(boundingBoxCornerTL),cg3::Point2d(boundingBoxCornerBR))
+TrapezoidalMap::TrapezoidalMap(cg3::Point2d boundingBoxCornerBL,
+                               cg3::Point2d boundingBoxCornerTR):
+    boundingBox(cg3::Point2d(boundingBoxCornerBL),cg3::Point2d(boundingBoxCornerTR))
 {
-    // TODO: Create one leaf for the bounding box
+    gasprj::Trapezoid boundingBoxTrap = gasprj::Trapezoid();
+    boundingBoxTrap.updateVertices(boundingBox);
+
+    trapezoids.push_back(boundingBoxTrap);
 }
 
 Trapezoid& TrapezoidalMap::getTrapezoid(size_t id) {
     return trapezoids[id];
 
 }
-std::vector<gasprj::Trapezoid>& TrapezoidalMap::getTrapezoids() {
+
+const std::vector<gasprj::Trapezoid>& TrapezoidalMap::getTrapezoids() const {
     return trapezoids;
 }
 

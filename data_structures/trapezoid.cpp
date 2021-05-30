@@ -2,7 +2,9 @@
 
 namespace gasprj {
 
-Trapezoid::Trapezoid()
+Trapezoid::Trapezoid() :
+    idSegmentT(NO_ID), idSegmentB(NO_ID), idPointL(NO_ID), idPointR(NO_ID),
+    idTrapezoidTL(NO_ID), idTrapezoidTR(NO_ID), idTrapezoidBR(NO_ID), idTrapezoidBL(NO_ID)
 {
 
 }
@@ -71,11 +73,35 @@ void Trapezoid::setIdTrapezoidBL(size_t id) {
     idTrapezoidBL = id;
 }
 
-void Trapezoid::updateVertices(TrapezoidalMapDataset& trapMapData) {
-    cg3::Segment2d segmentT = trapMapData.getSegment(idSegmentT);
-    cg3::Segment2d segmentB = trapMapData.getSegment(idSegmentB);
-    cg3::Point2d pointL = trapMapData.getPoint(idPointL);
-    cg3::Point2d pointR = trapMapData.getPoint(idPointR);
+void Trapezoid::updateVertices(const cg3::BoundingBox2 boundingBox) {
+
+    assert(idPointL == NO_ID && idPointR == NO_ID && idSegmentT == NO_ID && idSegmentB == NO_ID);
+
+    vertexTL = cg3::Point2d(boundingBox.min().x(), boundingBox.max().y());
+    vertexTR = cg3::Point2d(boundingBox.max().x(), boundingBox.max().y());
+    vertexBR = cg3::Point2d(boundingBox.max().x(), boundingBox.min().y());
+    vertexBL = cg3::Point2d(boundingBox.min().x(), boundingBox.min().y());
+}
+
+void Trapezoid::updateVertices(const TrapezoidalMapDataset& trapMapData, const cg3::BoundingBox2 boundingBox) {
+    cg3::Segment2d segmentT, segmentB;
+    cg3::Point2d pointL, pointR;
+
+    if(idPointL == NO_ID || idPointR == NO_ID) assert(idSegmentT == NO_ID && idSegmentB == NO_ID);
+
+    if (idPointL != NO_ID) pointL = trapMapData.getPoint(idPointL);
+    else pointL = cg3::Point2d(boundingBox.min().x(), boundingBox.max().y());
+
+    if (idPointR != NO_ID) pointR = trapMapData.getPoint(idPointR);
+    else pointR = cg3::Point2d(boundingBox.max().x(), boundingBox.max().y());
+
+    if (idSegmentT != NO_ID) segmentT = trapMapData.getSegment(idSegmentT);
+    else segmentT = cg3::Segment2d(cg3::Point2d(boundingBox.min().x(), boundingBox.max().y()),
+                                   cg3::Point2d(boundingBox.max().x(), boundingBox.max().y()));
+
+    if (idSegmentB != NO_ID) segmentB = trapMapData.getSegment(idSegmentB);
+    else segmentB = cg3::Segment2d(cg3::Point2d(boundingBox.min().x(), boundingBox.min().y()),
+                                   cg3::Point2d(boundingBox.max().x(), boundingBox.min().y()));
 
     double mT = (segmentT.p2().y()-segmentT.p1().y()) / (segmentT.p2().x()-segmentT.p1().x());
     double mB = (segmentB.p2().y()-segmentB.p1().y()) / (segmentB.p2().x()-segmentB.p1().x());
