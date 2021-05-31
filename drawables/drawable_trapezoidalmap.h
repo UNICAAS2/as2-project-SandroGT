@@ -23,6 +23,10 @@ public:
 
 private:
     size_t highlightedTrapezoidId;
+
+    const long RANDOM_COLORS_SEED = 0;
+    const float TRANSPARENCY_SELECTED = 0.75;
+    const float TRANSPARENCY_UNSELECTED = 0.25;
 };
 
 } // End namespace gasprj

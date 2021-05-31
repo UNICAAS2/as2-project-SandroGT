@@ -85,6 +85,10 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
     //the dataset.
     mainWindow.pushDrawableObject(&drawableTrapezoidalMap, "Trapezoids");
 
+    // Enable transparency (https://stackoverflow.com/questions/1617370/how-to-use-alpha-transparency-in-opengl)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+
 
 
     //#####################################################################
@@ -196,9 +200,9 @@ void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& seg
     //already in the structure. You could use the same approach for your trapezoidal map to make
     //it more efficient in memory. However, depending on how you implement your algorithms and data 
     //structures, you could save directly the point (Point2d) in each trapezoid (it is fine).
+    drawableTrapezoidalMap.setHighlightedTrapezoidId(NO_ID);
     gasprj::addSegmentToTrapezoidalMap(segment, drawableTrapezoidalMapDataset,
                                        drawableTrapezoidalMap, dag);
-    //updateCanvas();  // !!!: do I need this?
 
 
 
@@ -255,7 +259,6 @@ void TrapezoidalMapManager::queryTrapezoidalMap(const cg3::Point2d& queryPoint)
     //the output trapezoid in the canvas (DrawableTrapezoidMap should implement the method
     //to do that).
     drawableTrapezoidalMap.setHighlightedTrapezoidId(id);
-    //updateCanvas();  // !!!: do I need this?
 
 
 
@@ -277,7 +280,6 @@ void TrapezoidalMapManager::clearTrapezoidalMap()
     //Clear here your trapezoidal map data structure.
     drawableTrapezoidalMap.clear();
     dag.clear();
-    //updateCanvas();  // !!!: do I need this?
 
 
 
