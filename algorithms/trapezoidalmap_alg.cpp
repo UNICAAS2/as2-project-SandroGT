@@ -71,8 +71,8 @@ size_t queryTrapezoidalMap(const cg3::Point2d& point, const TrapezoidalMapDatase
 
 size_t queryTrapezoidalMap(const cg3::Segment2d& newSegment, const TrapezoidalMapDataset& trapMapData,
                            const gasprj::DAG& dag) {
-    // TODO: find a way to apply the const correctness and use the pass-by-reference to avoid the
-    // copy of nodes
+    assert(newSegment.p1().x() < newSegment.p2().x());
+
     DAGNode dagNode = dag.getRoot();
     // Scroll the DAG until a leaf is reached
     while(dagNode.getNodeType() != gasprj::NodeType::Leaf) {
@@ -142,7 +142,7 @@ size_t queryTrapezoidalMap(const cg3::Segment2d& newSegment, const TrapezoidalMa
 void crossedTrapezoids(const cg3::Segment2d& segment, const TrapezoidalMapDataset& trapMapData,
                        gasprj::TrapezoidalMap& trapMap, gasprj::DAG& dag,
                        std::vector<size_t>& traversedTraps) {
-    // Need an empty vector
+    assert(segment.p1().x() < segment.p2().x());
     assert(traversedTraps.size() == 0);
 
     // Search for the trapezoid in which the left vertex of the segment lies
@@ -177,12 +177,24 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
     // Finds the IDs of the new segment and of its endpoints
     bool found;
     size_t idNewSegment = trapMapData.findSegment(newSegment, found);
-    size_t idNewSegmentP1 = trapMapData.findPoint(newSegment.p1(), found);
-    size_t idNewSegmentP2 = trapMapData.findPoint(newSegment.p2(), found);
+    size_t idNewSegmentPL = trapMapData.findPoint(newSegment.p1(), found);
+    size_t idNewSegmentPR = trapMapData.findPoint(newSegment.p2(), found);
+
+    // Order the segment and its endpoints
+    cg3::Segment2d orderedNewSegment;
+    if (newSegment.p1().x() > newSegment.p2().x()) {
+        orderedNewSegment = cg3::Segment2d(newSegment.p2(), newSegment.p1());
+        std::swap(idNewSegmentPL, idNewSegmentPR);
+    }
+    else {
+        orderedNewSegment = newSegment;
+    }
+
+    assert(orderedNewSegment.p1().x() < orderedNewSegment.p2().x());
 
     // Find the trapezoids traversed by the new segment
     std::vector<size_t> traversedTraps = std::vector<size_t>();
-    crossedTrapezoids(newSegment, trapMapData, trapMap, dag, traversedTraps);
+    crossedTrapezoids(orderedNewSegment, trapMapData, trapMap, dag, traversedTraps);
     assert(traversedTraps.size() > 0);
     
     // Check the geometry conditions
@@ -193,10 +205,10 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
     bool overlapL, overlapR, isLVertexTEnd, isLVertexBEnd, isRVertexTEnd, isRVertexBEnd;
 
     if (firstTrapezoid.getIdPointL() == NO_ID) overlapL = false;
-    else overlapL = newSegment.p1() == trapMapData.getPoint(firstTrapezoid.getIdPointL());
+    else overlapL = trapMapData.getPoint(idNewSegmentPL) == trapMapData.getPoint(firstTrapezoid.getIdPointL());
 
-    if (firstTrapezoid.getIdPointR() == NO_ID) overlapR = false;
-    else overlapR = newSegment.p2() == trapMapData.getPoint(lastTrapezoid.getIdPointR());
+    if (lastTrapezoid.getIdPointR() == NO_ID) overlapR = false;
+    else overlapR = trapMapData.getPoint(idNewSegmentPR) == trapMapData.getPoint(lastTrapezoid.getIdPointR());
 
     if (firstTrapezoid.getIdPointL() == NO_ID || firstTrapezoid.getIdSegmentT() == NO_ID) isLVertexTEnd = false;
     else isLVertexTEnd = trapMapData.getSegment(firstTrapezoid.getIdSegmentT()).p1() == trapMapData.getPoint(firstTrapezoid.getIdPointL());
@@ -242,14 +254,23 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
         // There always is a top trapezoid
         idNewTrapT = idTrapezoid;
         // There always is a bottom trapezoid
-        idNewTrapB = trapMap.getNumberTrapezoids();
+        idNewTrapB = trapMap.getNumberTrapezoids(), idNext = idNewTrapB+1;
         // If the left point of the new segment do not overlap with the left point of the trapezoid,
         // then we have a left trapezoid
-        if (!overlapL) idNewTrapL = idNewTrapB+1;
+        if (!overlapL) idNewTrapL = idNext++;
         // If the right point of the new segment do not overlap with the right point of the trapezoid,
         // then we have a right trapezoid
-        if (!overlapR) idNewTrapR = idNewTrapL+1;
+        if (!overlapR) idNewTrapR = idNext;
 
+        // Update the adjacencies of the old neighbors of the old trapezoid
+        if (trapezoid.getIdTrapezoidTL() != NO_ID)
+            trapMap.getTrapezoid(trapezoid.getIdTrapezoidTL()).setIdTrapezoidTR(overlapL ? idNewTrapT : idNewTrapL);
+        if (trapezoid.getIdTrapezoidTR() != NO_ID)
+            trapMap.getTrapezoid(trapezoid.getIdTrapezoidTR()).setIdTrapezoidTL(overlapR ? idNewTrapT : idNewTrapR);
+        if (trapezoid.getIdTrapezoidBR() != NO_ID)
+            trapMap.getTrapezoid(trapezoid.getIdTrapezoidBR()).setIdTrapezoidBL(overlapR ? idNewTrapB : idNewTrapR);
+        if (trapezoid.getIdTrapezoidBL() != NO_ID)
+            trapMap.getTrapezoid(trapezoid.getIdTrapezoidBL()).setIdTrapezoidBR(overlapL ? idNewTrapB : idNewTrapL);
 
         // Create the new trapezoids and add them to the trapezoidal map
         gasprj::Trapezoid newTrap;
@@ -257,8 +278,8 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
         // Top trapezoid
         newTrap = trapezoid;
         newTrap.setIdSegmentB(idNewSegment);
-        newTrap.setIdPointL(idNewSegmentP1);
-        newTrap.setIdPointR(idNewSegmentP2);
+        newTrap.setIdPointL(idNewSegmentPL);
+        newTrap.setIdPointR(idNewSegmentPR);
         newTrap.setIdTrapezoidBL(NO_ID);
         newTrap.setIdTrapezoidBR(NO_ID);
         if (!overlapL) newTrap.setIdTrapezoidTL(idNewTrapL);
@@ -271,8 +292,8 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
         // Bottom trapezoid
         newTrap = trapezoid;
         newTrap.setIdSegmentT(idNewSegment);
-        newTrap.setIdPointL(idNewSegmentP1);
-        newTrap.setIdPointR(idNewSegmentP2);
+        newTrap.setIdPointL(idNewSegmentPL);
+        newTrap.setIdPointR(idNewSegmentPR);
         newTrap.setIdTrapezoidTL(NO_ID);
         newTrap.setIdTrapezoidTR(NO_ID);
         if (!overlapL) newTrap.setIdTrapezoidBL(idNewTrapL);
@@ -285,7 +306,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
         // Left trapezoid
         if (!overlapL) {
             newTrap = trapezoid;
-            newTrap.setIdPointR(idNewSegmentP1);
+            newTrap.setIdPointR(idNewSegmentPL);
             newTrap.setIdTrapezoidTR(idNewTrapT);
             newTrap.setIdTrapezoidBR(idNewTrapB);
             newTrap.updateVertices(trapMapData, trapMap.getBoundingBox());
@@ -295,7 +316,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
         // Right trapezoid
         if (!overlapR) {
             newTrap = trapezoid;
-            newTrap.setIdPointL(idNewSegmentP2);
+            newTrap.setIdPointL(idNewSegmentPR);
             newTrap.setIdTrapezoidTL(idNewTrapT);
             newTrap.setIdTrapezoidBL(idNewTrapB);
             newTrap.updateVertices(trapMapData, trapMap.getBoundingBox());
@@ -332,7 +353,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
 
         // Structure related to the left trapezoid
         if (!overlapL) {
-            newNode = DAGNode(gasprj::NodeType::XNode, idNewSegmentP1, idNewLeafL, overlapR ? idNewNodeY : idNewNodeXR);
+            newNode = DAGNode(gasprj::NodeType::XNode, idNewSegmentPL, idNewLeafL, overlapR ? idNewNodeY : idNewNodeXR);
             dag.overwriteNode(newNode, idNewNodeXL);
             newNode = DAGNode(gasprj::NodeType::Leaf, idNewTrapL, NO_ID, NO_ID);
             dag.addNewNode(newNode);
@@ -341,7 +362,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
 
         // Structure related to the right trapezoid
         if (!overlapR) {
-            newNode = DAGNode(gasprj::NodeType::XNode, idNewSegmentP2, idNewNodeY, idNewLeafR);
+            newNode = DAGNode(gasprj::NodeType::XNode, idNewSegmentPR, idNewNodeY, idNewLeafR);
             overlapL ? dag.overwriteNode(newNode, idNewNodeXR) : dag.addNewNode(newNode);
             newNode = DAGNode(gasprj::NodeType::Leaf, idNewTrapR, NO_ID, NO_ID);
             dag.addNewNode(newNode);
@@ -385,20 +406,26 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
         // There always is a top and bottom
         idNewTrapT = idTrapezoid, idNewTrapB = overlapL ? trapMap.getNumberTrapezoids() : idNewTrapL+1;
 
+        // Update the adjacencies of the old neighbors of the old trapezoid
+        if (!isLVertexTEnd)
+            trapMap.getTrapezoid(trapezoid.getIdTrapezoidTL()).setIdTrapezoidTR(overlapL ? idNewTrapT : idNewTrapL);
+        if (!isLVertexBEnd)
+            trapMap.getTrapezoid(trapezoid.getIdTrapezoidBL()).setIdTrapezoidBR(overlapL ? idNewTrapB : idNewTrapL);
+
         // Create the new trapezoids
         gasprj::Trapezoid newTrap, newTrapT, newTrapB, previousTrapT, previousTrapB;
 
         // Top and bottom trapezoids (created but not added to the trapezoidal map yet)
         newTrapT = trapezoid;
         newTrapT.setIdSegmentB(idNewSegment);
-        newTrapT.setIdPointL(idNewSegmentP1);
+        newTrapT.setIdPointL(idNewSegmentPL);
         newTrapT.setIdTrapezoidBL(NO_ID);
         if (!overlapL) newTrapT.setIdTrapezoidTL(idNewTrapL);
         else if (isLVertexTEnd) newTrapT.setIdTrapezoidTL(NO_ID);
 
         newTrapB = trapezoid;
         newTrapB.setIdSegmentT(idNewSegment);
-        newTrapB.setIdPointL(idNewSegmentP1);
+        newTrapB.setIdPointL(idNewSegmentPL);
         newTrapB.setIdTrapezoidTL(NO_ID);
         if (!overlapL) newTrapB.setIdTrapezoidBL(idNewTrapL);
         else if (isLVertexBEnd) newTrapB.setIdTrapezoidBL(NO_ID);
@@ -406,7 +433,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
         // Left trapezoid (added to the trapezoidal map)
         if (!overlapL) {
             newTrap = trapezoid;
-            newTrap.setIdPointR(idNewSegmentP1);
+            newTrap.setIdPointR(idNewSegmentPL);
             newTrap.setIdTrapezoidTR(idNewTrapT);
             newTrap.setIdTrapezoidBR(idNewTrapB);
             newTrap.updateVertices(trapMapData, trapMap.getBoundingBox());
@@ -434,7 +461,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
 
         // Structure related to the left trapezoid
         if (!overlapL) {
-            newNode = DAGNode(gasprj::NodeType::XNode, idNewSegmentP1, idNewLeafL, idNewNodeY);
+            newNode = DAGNode(gasprj::NodeType::XNode, idNewSegmentPL, idNewLeafL, idNewNodeY);
             dag.overwriteNode(newNode, idNewNodeXL);
             newNode = DAGNode(gasprj::NodeType::Leaf, idNewTrapL, NO_ID, NO_ID);
             dag.addNewNode(newNode);
@@ -462,7 +489,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
         previousTrapT = newTrapT, previousTrapB = newTrapB;
         idPreviousLeafT = idNewLeafT, idPreviousLeafB = idNewLeafB;
         assert(trapezoid.getIdPointR() != NO_ID);
-        segmentPreviouslyBelow = cg3::isPointAtLeft(newSegment, trapMapData.getPoint(trapezoid.getIdPointR()));;
+        segmentPreviouslyBelow = cg3::isPointAtLeft(orderedNewSegment, trapMapData.getPoint(trapezoid.getIdPointR()));;
         for (size_t i = 1; i < traversedTraps.size()-1; i++) {
 
             //--- Trapezoidal Map update
@@ -540,7 +567,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
 
             //--- End of DAG update
 
-            segmentPreviouslyBelow = cg3::isPointAtLeft(newSegment, trapMapData.getPoint(trapezoid.getIdPointR()));
+            segmentPreviouslyBelow = cg3::isPointAtLeft(orderedNewSegment, trapMapData.getPoint(trapezoid.getIdPointR()));
         }
 
         //------ End of center trapezoids update
@@ -570,7 +597,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
             else trapMap.addNewTrapezoid(previousTrapT);
             // The previous bottom trapezoid has come to an end too, add it to the trapezoidal map
             previousTrapB.setIdTrapezoidTR(NO_ID);
-            previousTrapB.setIdPointR(idNewSegmentP2);
+            previousTrapB.setIdPointR(idNewSegmentPR);
             if (!overlapR) previousTrapB.setIdTrapezoidBR(idNewTrapR);
             else if (isRVertexBEnd) previousTrapB.setIdTrapezoidBR(NO_ID);
             else previousTrapB.setIdTrapezoidBR(trapezoid.getIdTrapezoidBR());
@@ -580,7 +607,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
             // Create the new top trapezoid
             newTrapT = trapezoid;
             newTrapT.setIdSegmentB(idNewSegment);
-            newTrapT.setIdPointR(idNewSegmentP2);
+            newTrapT.setIdPointR(idNewSegmentPR);
             newTrapT.setIdTrapezoidBL(idPreviousTrapT);
             newTrapT.setIdTrapezoidBR(NO_ID);
             if (!overlapR) newTrapT.setIdTrapezoidTR(idNewTrapR);
@@ -603,7 +630,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
             else trapMap.addNewTrapezoid(previousTrapB);
             // The previous top trapezoid has come to an end too, add it to the trapezoidal map
             previousTrapT.setIdTrapezoidBR(NO_ID);
-            previousTrapT.setIdPointR(idNewSegmentP2);
+            previousTrapT.setIdPointR(idNewSegmentPR);
             if (!overlapR) previousTrapT.setIdTrapezoidTR(idNewTrapR);
             else if (isRVertexTEnd) previousTrapT.setIdTrapezoidTR(NO_ID);
             else previousTrapT.setIdTrapezoidTR(trapezoid.getIdTrapezoidTR());
@@ -613,7 +640,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
             // Create the new bottom trapezoid
             newTrapB = trapezoid;
             newTrapB.setIdSegmentT(idNewSegment);
-            newTrapB.setIdPointR(idNewSegmentP2);
+            newTrapB.setIdPointR(idNewSegmentPR);
             newTrapB.setIdTrapezoidTL(idPreviousTrapB);
             newTrapB.setIdTrapezoidTR(NO_ID);
             if (!overlapR) newTrapB.setIdTrapezoidBR(idNewTrapR);
@@ -627,12 +654,18 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
         // Right trapezoid
         if (!overlapR) {
             newTrap = trapezoid;
-            newTrap.setIdPointL(idNewSegmentP2);
+            newTrap.setIdPointL(idNewSegmentPR);
             newTrap.setIdTrapezoidTL(idPreviousTrapT);
             newTrap.setIdTrapezoidBL(idPreviousTrapB);
             newTrap.updateVertices(trapMapData, trapMap.getBoundingBox());
             trapMap.addNewTrapezoid(newTrap);
         }
+
+        // Update the adjacencies of the old neighbors of the old trapezoid
+        if (!isRVertexTEnd)
+            trapMap.getTrapezoid(trapezoid.getIdTrapezoidTR()).setIdTrapezoidTL(overlapR ? idNewTrapT : idNewTrapR);
+        if (!isRVertexBEnd)
+            trapMap.getTrapezoid(trapezoid.getIdTrapezoidBR()).setIdTrapezoidBL(overlapR ? idNewTrapB : idNewTrapR);
 
         //--- End of Trapezoidal Map update
 
@@ -654,7 +687,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
 
         // Structure related to the right trapezoid
         if (!overlapR) {
-            newNode = DAGNode(gasprj::NodeType::XNode, idNewSegmentP2, idNewNodeY, idNewLeafR);
+            newNode = DAGNode(gasprj::NodeType::XNode, idNewSegmentPR, idNewNodeY, idNewLeafR);
             dag.overwriteNode(newNode, idNewNodeXR);
             newNode = DAGNode(gasprj::NodeType::Leaf, idNewTrapR, NO_ID, NO_ID);
             dag.addNewNode(newNode);

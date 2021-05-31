@@ -13,7 +13,7 @@ size_t queryTrapezoidalMap(const cg3::Point2d& point, const TrapezoidalMapDatase
                            const gasprj::DAG& dag);
 size_t queryTrapezoidalMap(const cg3::Segment2d& newSegment, const TrapezoidalMapDataset& trapMapData,
                            const gasprj::DAG& dag);
-void addSegmentToTrapezoidalMap(const cg3::Segment2d& segment, TrapezoidalMapDataset& trapMapData,
+void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMapDataset& trapMapData,
                                 gasprj::TrapezoidalMap& trapMap, gasprj::DAG& dag);
 
 } // End namespace gasprj
