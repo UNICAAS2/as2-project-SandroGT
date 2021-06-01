@@ -13,8 +13,8 @@ TrapezoidalMap::TrapezoidalMap(cg3::Point2d boundingBoxCornerBL,
 }
 
 Trapezoid& TrapezoidalMap::getTrapezoid(size_t id) {
+    assert(id < trapezoids.size());
     return trapezoids[id];
-
 }
 
 const std::vector<gasprj::Trapezoid>& TrapezoidalMap::getTrapezoids() const {

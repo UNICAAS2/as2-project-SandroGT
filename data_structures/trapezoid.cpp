@@ -98,10 +98,12 @@ void Trapezoid::updateVertices(const TrapezoidalMapDataset& trapMapData, const c
     if (idSegmentT != NO_ID) segmentT = trapMapData.getSegment(idSegmentT);
     else segmentT = cg3::Segment2d(cg3::Point2d(boundingBox.min().x(), boundingBox.max().y()),
                                    cg3::Point2d(boundingBox.max().x(), boundingBox.max().y()));
+    if (segmentT.p1().x() > segmentT.p2().x()) segmentT = cg3::Segment2d(segmentT.p2(), segmentT.p1());
 
     if (idSegmentB != NO_ID) segmentB = trapMapData.getSegment(idSegmentB);
     else segmentB = cg3::Segment2d(cg3::Point2d(boundingBox.min().x(), boundingBox.min().y()),
                                    cg3::Point2d(boundingBox.max().x(), boundingBox.min().y()));
+    if (segmentB.p1().x() > segmentB.p2().x()) segmentB = cg3::Segment2d(segmentB.p2(), segmentB.p1());
 
     double mT = (segmentT.p2().y()-segmentT.p1().y()) / (segmentT.p2().x()-segmentT.p1().x());
     double mB = (segmentB.p2().y()-segmentB.p1().y()) / (segmentB.p2().x()-segmentB.p1().x());

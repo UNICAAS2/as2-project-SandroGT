@@ -39,14 +39,18 @@ size_t queryTrapezoidalMap(const cg3::Point2d& point, const TrapezoidalMapDatase
             // Point-Segment comparison
             case gasprj::NodeType::YNode: {
                 const cg3::Segment2d& segment = trapMapData.getSegment(dagNode.getIdInfo());
+                cg3::Segment2d orderedSegment;
+                if (segment.p1().x() > segment.p2().x()) orderedSegment = cg3::Segment2d(segment.p2(), segment.p1());
+                else orderedSegment = segment;
+
                 // Query point above the segment
-                if (cg3::isPointAtLeft(segment, point)) {
-                    assert(segment.p1() != point);
+                if (cg3::isPointAtLeft(orderedSegment, point)) {
+                    assert(orderedSegment.p1() != point);
                     dagNode = dag.getNode(dagNode.getIdNodeL());
                 }
                 // Query point below the segment
-                else if (cg3::isPointAtRight(segment, point)) {
-                    assert(segment.p1() != point);
+                else if (cg3::isPointAtRight(orderedSegment, point)) {
+                    assert(orderedSegment.p1() != point);
                     dagNode = dag.getNode(dagNode.getIdNodeR());
                 }
                 // Query point lying on the segment
@@ -95,27 +99,31 @@ size_t queryTrapezoidalMap(const cg3::Segment2d& newSegment, const TrapezoidalMa
             // Point-Segment comparison
             case gasprj::NodeType::YNode: {
                 const cg3::Segment2d& segment = trapMapData.getSegment(dagNode.getIdInfo());
+                cg3::Segment2d orderedSegment;
+                if (segment.p1().x() > segment.p2().x()) orderedSegment = cg3::Segment2d(segment.p2(), segment.p1());
+                else orderedSegment = segment;
+
                 // Query point above the segment
-                if (cg3::isPointAtLeft(segment, newSegment.p1())) {
-                    assert(segment.p1() != newSegment.p1());
+                if (cg3::isPointAtLeft(orderedSegment, newSegment.p1())) {
+                    assert(orderedSegment.p1() != newSegment.p1());
                     dagNode = dag.getNode(dagNode.getIdNodeL());
                 }
                 // Query point below the segment
-                else if (cg3::isPointAtRight(segment, newSegment.p1())) {
-                    assert(segment.p1() != newSegment.p1());
+                else if (cg3::isPointAtRight(orderedSegment, newSegment.p1())) {
+                    assert(orderedSegment.p1() != newSegment.p1());
                     dagNode = dag.getNode(dagNode.getIdNodeR());
                 }
                 // Query point lying on the segment: this happens when the query point is also the
                 // left endpoint of the segment. Compare the slopes of the two segments to check
                 // where the query continues
                 else {
-                    assert(segment.p1() == newSegment.p1());
+                    assert(orderedSegment.p1() == newSegment.p1());
                     // New segment slope is larger, continue above
-                    if (cg3::isPointAtLeft(segment, newSegment.p2())) {
+                    if (cg3::isPointAtLeft(orderedSegment, newSegment.p2())) {
                         dagNode = dag.getNode(dagNode.getIdNodeL());
                     }
                     // New segment slope is smaller, continue below
-                    else if (cg3::isPointAtRight(segment, newSegment.p2())) {
+                    else if (cg3::isPointAtRight(orderedSegment, newSegment.p2())) {
                         dagNode = dag.getNode(dagNode.getIdNodeR());
                     }
                     else {
@@ -149,23 +157,26 @@ void crossedTrapezoids(const cg3::Segment2d& segment, const TrapezoidalMapDatase
     size_t idTrap = queryTrapezoidalMap(segment, trapMapData, dag);
     size_t idPointR = trapMap.getTrapezoid(idTrap).getIdPointR();
     cg3::Point2d trapezoidPointR = (idPointR == NO_ID) ? trapMap.getBoundingBox().max() : trapMapData.getPoint(idPointR);
+    gasprj::Trapezoid trap;
 
     // Search for all the crossed trapezoids and save their IDs in the vector
     traversedTraps.push_back(idTrap);
     while(segment.p2().x() > trapezoidPointR.x()) {
+        trap = trapMap.getTrapezoid(idTrap);
         // If the right point of the trapezoid lies above the segment, move to the bottom-right adjacency
         if (cg3::isPointAtLeft(segment, trapezoidPointR)) {
-            idTrap = trapMap.getTrapezoid(idTrap).getIdTrapezoidBR();
+            idTrap = trap.getIdTrapezoidBR();
         }
         // If the right point of the trapezoid lies below the segment, move to the top-right adjacency
         else if (cg3::isPointAtRight(segment, trapezoidPointR)) {
-            idTrap = trapMap.getTrapezoid(idTrap).getIdTrapezoidTR();
+            idTrap = trap.getIdTrapezoidTR();
         }
         // Point lies on a segment
         else {
             assert(false);
         }
-        idPointR = trapMap.getTrapezoid(idTrap).getIdPointR();
+        trap = trapMap.getTrapezoid(idTrap);
+        idPointR = trap.getIdPointR();
         trapezoidPointR = (idPointR == NO_ID) ? trapMap.getBoundingBox().max() : trapMapData.getPoint(idPointR);
         traversedTraps.push_back(idTrap);
     }
@@ -189,8 +200,8 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
     else {
         orderedNewSegment = newSegment;
     }
-
     assert(orderedNewSegment.p1().x() < orderedNewSegment.p2().x());
+    assert(trapMapData.getPoint(idNewSegmentPL).x() < trapMapData.getPoint(idNewSegmentPR).x());
 
     // Find the trapezoids traversed by the new segment
     std::vector<size_t> traversedTraps = std::vector<size_t>();
@@ -210,17 +221,31 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
     if (lastTrapezoid.getIdPointR() == NO_ID) overlapR = false;
     else overlapR = trapMapData.getPoint(idNewSegmentPR) == trapMapData.getPoint(lastTrapezoid.getIdPointR());
 
+    cg3::Segment2d supportSegment;
     if (firstTrapezoid.getIdPointL() == NO_ID || firstTrapezoid.getIdSegmentT() == NO_ID) isLVertexTEnd = false;
-    else isLVertexTEnd = trapMapData.getSegment(firstTrapezoid.getIdSegmentT()).p1() == trapMapData.getPoint(firstTrapezoid.getIdPointL());
-
+    else {
+        supportSegment = trapMapData.getSegment(firstTrapezoid.getIdSegmentT());
+        if (supportSegment.p1().x() > supportSegment.p2().x()) supportSegment = cg3::Segment2d(supportSegment.p2(), supportSegment.p1());
+        isLVertexTEnd = supportSegment.p1() == trapMapData.getPoint(firstTrapezoid.getIdPointL());
+    }
     if (firstTrapezoid.getIdPointL() == NO_ID || firstTrapezoid.getIdSegmentB() == NO_ID) isLVertexBEnd = false;
-    else isLVertexBEnd = trapMapData.getSegment(firstTrapezoid.getIdSegmentB()).p1() == trapMapData.getPoint(firstTrapezoid.getIdPointL());
-
+    else {
+        supportSegment = trapMapData.getSegment(firstTrapezoid.getIdSegmentB());
+        if (supportSegment.p1().x() > supportSegment.p2().x()) supportSegment = cg3::Segment2d(supportSegment.p2(), supportSegment.p1());
+        isLVertexBEnd = supportSegment.p1() == trapMapData.getPoint(firstTrapezoid.getIdPointL());
+    }
     if (lastTrapezoid.getIdPointR() == NO_ID || lastTrapezoid.getIdSegmentT() == NO_ID) isRVertexTEnd = false;
-    else isRVertexTEnd = trapMapData.getSegment(lastTrapezoid.getIdSegmentT()).p2() == trapMapData.getPoint(lastTrapezoid.getIdPointR());
-
+    else {
+        supportSegment = trapMapData.getSegment(lastTrapezoid.getIdSegmentT());
+        if (supportSegment.p1().x() > supportSegment.p2().x()) supportSegment = cg3::Segment2d(supportSegment.p2(), supportSegment.p1());
+        isRVertexTEnd = supportSegment.p2() == trapMapData.getPoint(lastTrapezoid.getIdPointR());
+    }
     if (lastTrapezoid.getIdPointR() == NO_ID || lastTrapezoid.getIdSegmentB() == NO_ID) isRVertexBEnd = false;
-    else isRVertexBEnd = trapMapData.getSegment(lastTrapezoid.getIdSegmentB()).p2() == trapMapData.getPoint(lastTrapezoid.getIdPointR());
+    else {
+        supportSegment = trapMapData.getSegment(lastTrapezoid.getIdSegmentB());
+        if (supportSegment.p1().x() > supportSegment.p2().x()) supportSegment = cg3::Segment2d(supportSegment.p2(), supportSegment.p1());
+        isRVertexBEnd = supportSegment.p2() == trapMapData.getPoint(lastTrapezoid.getIdPointR());
+    }
 
     // Define the IDs for the new trapezoids that could to be created
     size_t idNewTrapT = NO_ID, idNewTrapB = NO_ID, idNewTrapL = NO_ID, idNewTrapR = NO_ID;
@@ -553,12 +578,14 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
                 newNode = DAGNode(gasprj::NodeType::Leaf, idNewTrapT, NO_ID, NO_ID);
                 dag.addNewNode(newNode);
                 dag.remapLeaf(idNewTrapT, idNewLeafT);
+                idPreviousLeafT = idNewLeafT;
             }
             else {
                 // There is just a new bottom trapezoid, so just a new right leaf
                 newNode = DAGNode(gasprj::NodeType::Leaf, idNewTrapB, NO_ID, NO_ID);
                 dag.addNewNode(newNode);
                 dag.remapLeaf(idNewTrapB, idNewLeafB);
+                idPreviousLeafB = idNewLeafB;
             }
 
             //--- End of DAG update
