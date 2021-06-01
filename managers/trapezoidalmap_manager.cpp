@@ -85,10 +85,6 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
     //the dataset.
     mainWindow.pushDrawableObject(&drawableTrapezoidalMap, "Trapezoids");
 
-    // Enable transparency (https://stackoverflow.com/questions/1617370/how-to-use-alpha-transparency-in-opengl)
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-
 
 
     //#####################################################################

@@ -98,7 +98,12 @@ void DAG::remapLeaf(size_t trapezoidId, size_t nodeId) {
 }
 
 void DAG::clear() {
-    // TODO: Restore the one-leaf bounding-box
+    nodes.clear();
+    leavesMap.clear();
+
+    DAGNode firstNode = DAGNode(NodeType::Leaf, 0, NO_ID, NO_ID);
+    addNewNode(firstNode);
+    mapLeaf(0, 0);
 }
 
 } // End namespace gasprj

@@ -8,7 +8,9 @@ DrawableTrapezoidalMap::DrawableTrapezoidalMap(cg3::Point2d boundingBoxCornerBL,
                                                cg3::Point2d boundingBoxCornerTR) :
     TrapezoidalMap(boundingBoxCornerBL, boundingBoxCornerTR), highlightedTrapezoidId(NO_ID)
 {
-
+    // Enable transparency (https://stackoverflow.com/questions/1617370/how-to-use-alpha-transparency-in-opengl)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
 }
 
 void DrawableTrapezoidalMap::draw() const
@@ -52,6 +54,12 @@ size_t DrawableTrapezoidalMap::getHighlightedTrapezoidId() const {
 
 void DrawableTrapezoidalMap::setHighlightedTrapezoidId(size_t id) {
     highlightedTrapezoidId = id;
+}
+
+void DrawableTrapezoidalMap::clear() {
+    this->TrapezoidalMap::clear();
+
+    highlightedTrapezoidId = NO_ID;
 }
 
 } // End namespace gasprj

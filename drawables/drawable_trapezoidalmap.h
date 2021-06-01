@@ -21,6 +21,8 @@ public:
     size_t getHighlightedTrapezoidId() const;
     void setHighlightedTrapezoidId(size_t id);
 
+    void clear();
+
 private:
     size_t highlightedTrapezoidId;
 

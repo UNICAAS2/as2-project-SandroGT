@@ -39,7 +39,12 @@ const cg3::BoundingBox2& TrapezoidalMap::getBoundingBox() const {
 }
 
 void TrapezoidalMap::clear() {
-    // TODO: Restore the one-leaf bounding-box
+    trapezoids.clear();
+
+    gasprj::Trapezoid boundingBoxTrap = gasprj::Trapezoid();
+    boundingBoxTrap.updateVertices(boundingBox);
+
+    trapezoids.push_back(boundingBoxTrap);
 }
 
 } // End namespace gasprj
