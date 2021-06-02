@@ -9,6 +9,7 @@
 #include <cg3/data_structures/arrays/arrays.h>
 #include <cg3/utilities/timer.h>
 
+#include "algorithms/trapezoidalmap_alg.h"
 #include "utils/fileutils.h"
 
 //Limits for the bounding box
@@ -36,7 +37,9 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
                 cg3::Point2d(BOUNDINGBOX, BOUNDINGBOX)),
     firstPointSelectedColor(220, 80, 80),
     firstPointSelectedSize(5),
-    isFirstPointSelected(false)
+    isFirstPointSelected(false),
+    drawableTrapezoidalMap(cg3::Point2d(-BOUNDINGBOX, -BOUNDINGBOX),
+                           cg3::Point2d(BOUNDINGBOX, BOUNDINGBOX))
 {
     //NOTE 1: you probably need to initialize some objects in the constructor. You
     //can see how to initialize an attribute in the lines above. This is C++ style
@@ -80,7 +83,7 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
     //always rendered (even when it is empty), instead of deleting it from the main window
     //and re-drawing it again. See how we implemented the drawing of the bounding box and 
     //the dataset.
-
+    mainWindow.pushDrawableObject(&drawableTrapezoidalMap, "Trapezoids");
 
 
 
@@ -119,7 +122,7 @@ TrapezoidalMapManager::~TrapezoidalMapManager()
     //
     //Try to AVOID using dynamic objects whenever it is possible (it will
     //be evaluated!)
-
+    mainWindow.deleteDrawableObject(&drawableTrapezoidalMap);
 
 
 
@@ -193,7 +196,9 @@ void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& seg
     //already in the structure. You could use the same approach for your trapezoidal map to make
     //it more efficient in memory. However, depending on how you implement your algorithms and data 
     //structures, you could save directly the point (Point2d) in each trapezoid (it is fine).
-
+    drawableTrapezoidalMap.setHighlightedTrapezoidId(NO_ID);
+    gasprj::addSegmentToTrapezoidalMap(segment, drawableTrapezoidalMapDataset,
+                                       drawableTrapezoidalMap, dag);
 
 
 
@@ -203,7 +208,7 @@ void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& seg
 
     //You can delete this line after you implement the algorithm: it is
     //just needed to suppress the unused-variable warning
-    CG3_SUPPRESS_WARNING(segment);
+    //CG3_SUPPRESS_WARNING(segment);
 }
 
 /**
@@ -237,7 +242,7 @@ void TrapezoidalMapManager::queryTrapezoidalMap(const cg3::Point2d& queryPoint)
     //in the structure). This is a bit more complicated, but a better structure, because, in this case
     //TrapezoidalMap and DAG are two separate general purpose data structures that an algorithm uses.
     //THINK ABOUT YOUR STRUCTURE BEFORE WRITING CODE!
-
+    size_t id = gasprj::queryTrapezoidalMap(queryPoint, drawableTrapezoidalMapDataset, dag);
 
 
 
@@ -249,8 +254,7 @@ void TrapezoidalMapManager::queryTrapezoidalMap(const cg3::Point2d& queryPoint)
     //When you find the trapezoid in which the point is contained, you should highlight
     //the output trapezoid in the canvas (DrawableTrapezoidMap should implement the method
     //to do that).
-
-
+    drawableTrapezoidalMap.setHighlightedTrapezoidId(id);
 
 
 
@@ -260,7 +264,7 @@ void TrapezoidalMapManager::queryTrapezoidalMap(const cg3::Point2d& queryPoint)
 
     //You can delete this line after you implement the algorithm: it is
     //just needed to suppress the unused-variable warning
-    CG3_SUPPRESS_WARNING(queryPoint);
+    //CG3_SUPPRESS_WARNING(queryPoint);
 }
 
 /**
@@ -270,6 +274,8 @@ void TrapezoidalMapManager::clearTrapezoidalMap()
 {
     //---------------------------------------------------------------------
     //Clear here your trapezoidal map data structure.
+    drawableTrapezoidalMap.clear();
+    dag.clear();
 
 
 
