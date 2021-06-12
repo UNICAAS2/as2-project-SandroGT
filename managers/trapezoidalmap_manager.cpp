@@ -9,7 +9,7 @@
 #include <cg3/data_structures/arrays/arrays.h>
 #include <cg3/utilities/timer.h>
 
-#include "algorithms/trapezoidalmap_alg.h"
+#include "algorithms/planar_point_location.h"
 #include "utils/fileutils.h"
 
 //Limits for the bounding box

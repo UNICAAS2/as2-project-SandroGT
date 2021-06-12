@@ -1,4 +1,4 @@
-#include "trapezoidalmap_alg.h"
+#include "planar_point_location.h"
 
 #include<algorithm>
 
@@ -190,6 +190,8 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
     size_t idNewSegment = trapMapData.findSegment(newSegment, found);
     size_t idNewSegmentPL = trapMapData.findPoint(newSegment.p1(), found);
     size_t idNewSegmentPR = trapMapData.findPoint(newSegment.p2(), found);
+
+
 
     // Order the segment and its endpoints
     cg3::Segment2d orderedNewSegment;

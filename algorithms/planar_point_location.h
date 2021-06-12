@@ -1,5 +1,5 @@
-#ifndef TRAPEZOIDALMAP_ALG_H
-#define TRAPEZOIDALMAP_ALG_H
+#ifndef PLANAR_POINT_LOCATION_H
+#define PLANAR_POINT_LOCATION_H
 
 #include <cg3/geometry/segment2.h>
 
@@ -18,4 +18,4 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d& newSegment, TrapezoidalMap
 
 } // End namespace gasprj
 
-#endif // TRAPEZOIDALMAP_ALG_H
+#endif // PLANAR_POINT_LOCATION_H
