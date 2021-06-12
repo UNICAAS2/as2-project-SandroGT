@@ -1,6 +1,9 @@
 #include "trapezoidalmap_manager.h"
 #include "ui_trapezoidalmapmanager.h"
 
+#include <iostream>
+#include <fstream>
+
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QInputDialog>
@@ -17,6 +20,7 @@
 //Do not change the following line
 #define BOUNDINGBOX 1e+6
 
+#define LOG_RANDOM_INSERT_PATH "../GASTrapezoidalMap/test/datasets/logRandomInsert.txt"
 
 //----------------------------------------------------------------------------------------------
 //                         You have to write your code in the area below.
@@ -405,6 +409,12 @@ std::vector<cg3::Segment2d> TrapezoidalMapManager::generateRandomNonIntersecting
     }
 
     TrapezoidalMapDataset dataset;
+    std::ofstream logSegments;
+    logSegments.precision(4);
+    logSegments << std::fixed;
+    logSegments.open(LOG_RANDOM_INSERT_PATH, std::ios::out);
+    logSegments << n << "\n";
+    logSegments.close();
     while (dataset.segmentNumber() < n) {
         std::uniform_int_distribution<int> dist(0, randomPoints.size() - 1);
 
@@ -413,6 +423,11 @@ std::vector<cg3::Segment2d> TrapezoidalMapManager::generateRandomNonIntersecting
 
         bool insertedSegment;
         dataset.addSegment(cg3::Segment2d(p1, p2), insertedSegment);
+        if (insertedSegment) {
+            logSegments.open(LOG_RANDOM_INSERT_PATH, std::ios::app);
+            logSegments << p1.x() << " " << p1.y() << " " << p2.x() << " " << p2.y() << "\n";
+            logSegments.close();
+        }
     }
 
     return dataset.getSegments();
