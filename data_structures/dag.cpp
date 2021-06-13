@@ -4,58 +4,9 @@
 
 namespace gasprj {
 
-DAGNode::DAGNode()
-{
-
-}
-
-DAGNode::DAGNode(NodeType typeInfo, size_t idInfo, size_t idNodeL, size_t idNodeR) :
-    typeInfo(typeInfo), idInfo(idInfo), idNodeL(idNodeL), idNodeR(idNodeR)
-{
-
-}
-
-NodeType DAGNode::getNodeType() {
-    return typeInfo;
-}
-
-void DAGNode::setNodeType(NodeType nodeType) {
-    typeInfo = nodeType;
-}
-
-size_t DAGNode::getIdInfo() const {
-    return idInfo;
-}
-
-void DAGNode::setIdInfo(size_t id) {
-    idInfo = id;
-}
-
-size_t DAGNode::getIdNodeL() const {
-    return idNodeL;
-}
-
-void DAGNode::setIdNodeL(size_t id) {
-    idNodeL = id;
-}
-
-size_t DAGNode::getIdNodeR() const {
-    return idNodeR;
-}
-
-void DAGNode::setIdNodeR(size_t id) {
-    idNodeR = id;
-}
-
-
-
 DAG::DAG() :
-    nodes(), leavesMap()
+    nodes()
 {
-    // Add a first node representing the bounding box (one and only trapezoid at first)
-    DAGNode firstNode = DAGNode(NodeType::Leaf, 0, NO_ID, NO_ID);
-    addNewNode(firstNode);
-    mapLeaf(0, 0);
 }
 
 const DAGNode& DAG::getRoot() const {

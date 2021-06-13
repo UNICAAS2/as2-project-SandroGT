@@ -42,6 +42,7 @@ DISTFILES += \
 SOURCES +=  \
     algorithms/planar_point_location.cpp \
     data_structures/dag.cpp \
+    data_structures/dag_node.cpp \
     data_structures/segment_intersection_checker.cpp \
     data_structures/trapezoid.cpp \
     data_structures/trapezoidalmap.cpp \
@@ -58,6 +59,7 @@ FORMS += \
 HEADERS += \
     algorithms/planar_point_location.h \
     data_structures/dag.h \
+    data_structures/dag_node.h \
     data_structures/segment_intersection_checker.h \
     data_structures/trapezoid.h \
     data_structures/trapezoidalmap.h \
