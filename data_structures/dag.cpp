@@ -1,60 +1,84 @@
 #include "dag.h"
 
+#include <cassert>
+
 #include "trapezoid.h"
 
 namespace gasprj {
 
+/**
+ * @brief Default constructor of a DAG
+ */
 DAG::DAG() :
     nodes()
 {
 }
 
-const DAGNode& DAG::getRoot() const {
+/**
+ * @brief Get the root of the DAG
+ * @return The first node of the DAG
+ */
+const DAG::Node &DAG::getRoot() const
+{
     return nodes[0];
 }
 
-const DAGNode& DAG::getNode(size_t id) const {
+/**
+ * @brief Get a specif node of the DAG
+ * @param[in] id Index of the node
+ * @return The specified node of the DAG
+ */
+const DAG::Node &DAG::getNode(size_t id) const
+{
     return nodes[id];
 }
 
-const std::vector<DAGNode>& DAG::getNodes() const {
+/**
+ * @brief Get all the nodes of the DAG
+ * @return A vector containing all the nodes of the DAG
+ */
+const std::vector<DAG::Node> &DAG::getNodes() const
+{
     return nodes;
 }
 
-void DAG::addNewNode(DAGNode& newNode) {
-    nodes.push_back(newNode);
+/**
+ * @brief Add a new node in the DAG
+ * @param node New node
+ *
+ * Perform an insertion in the back of the vector of nodes
+ */
+void DAG::addNode(DAG::Node &node)
+{
+    nodes.push_back(node);
 }
 
-void DAG::overwriteNode(DAGNode& newNode, size_t id) {
+/**
+ * @brief Replace a node in the DAG
+ * @param node New node
+ * @param id Index of the node to be replaced
+ */
+void DAG::overwriteNode(DAG::Node &node, size_t id)
+{
     assert(id < nodes.size());
-    nodes[id] = newNode;
+    nodes[id] = node;
 }
 
-size_t DAG::getNumberNodes() {
+/**
+ * @brief Get the number of nodes (internal and leaves) composing the DAG
+ * @return The number of nodes in the DAG
+ */
+size_t DAG::size()
+{
     return nodes.size();
 }
 
-
-size_t DAG::findLeaf(size_t trapezoidId) {
-    return leavesMap[trapezoidId];
-}
-
-void DAG::mapLeaf(size_t trapezoidId, size_t nodeId) {
-    leavesMap.insert(std::pair<size_t, size_t>(trapezoidId, nodeId));
-}
-
-void DAG::remapLeaf(size_t trapezoidId, size_t nodeId) {
-    leavesMap.erase(trapezoidId);
-    leavesMap.insert(std::pair<size_t, size_t>(trapezoidId, nodeId));
-}
-
-void DAG::clear() {
+/**
+ * @brief Delete all the nodes in the DAG
+ */
+void DAG::clear()
+{
     nodes.clear();
-    leavesMap.clear();
-
-    DAGNode firstNode = DAGNode(NodeType::Leaf, 0, NO_ID, NO_ID);
-    addNewNode(firstNode);
-    mapLeaf(0, 0);
 }
 
 } // End namespace gasprj

@@ -25,7 +25,8 @@ DAG::Node::Node(Type type, size_t idInfo, size_t idNodeL, size_t idNodeR) :
  * @brief Get the type of the node
  * @return Type of the node
  */
-DAG::Node::Type DAG::Node::getType() const {
+DAG::Node::Type DAG::Node::getType() const
+{
     return type;
 }
 
@@ -33,7 +34,8 @@ DAG::Node::Type DAG::Node::getType() const {
  * @brief Set the type of the node
  * @param type New type of the node
  */
-void DAG::Node::setType(Type type) {
+void DAG::Node::setType(Type type)
+{
     this->type = type;
 }
 
@@ -41,7 +43,8 @@ void DAG::Node::setType(Type type) {
  * @brief Get the reference to the information held by the node
  * @return An ID (or index) for the element referenced by the node
  */
-size_t DAG::Node::getIdInfo() const {
+size_t DAG::Node::getIdInfo() const
+{
     return idInfo;
 }
 
@@ -49,7 +52,8 @@ size_t DAG::Node::getIdInfo() const {
  * @brief Set the reference to the information held by the node
  * @param The ID (or index) for the new element referenced by the node
  */
-void DAG::Node::setIdInfo(size_t id) {
+void DAG::Node::setIdInfo(size_t id)
+{
     idInfo = id;
 }
 
@@ -57,7 +61,8 @@ void DAG::Node::setIdInfo(size_t id) {
  * @brief Get the index of the left child
  * @return Index of the left child
  */
-size_t DAG::Node::getIdNodeL() const {
+size_t DAG::Node::getIdNodeL() const
+{
     return idNodeL;
 }
 
@@ -65,7 +70,8 @@ size_t DAG::Node::getIdNodeL() const {
  * @brief Set the index of the left child
  * @param New index of the left child
  */
-void DAG::Node::setIdNodeL(size_t id) {
+void DAG::Node::setIdNodeL(size_t id)
+{
     idNodeL = id;
 }
 
@@ -73,7 +79,8 @@ void DAG::Node::setIdNodeL(size_t id) {
  * @brief Get the index of the right child
  * @return Index of the right child
  */
-size_t DAG::Node::getIdNodeR() const {
+size_t DAG::Node::getIdNodeR() const
+{
     return idNodeR;
 }
 
@@ -81,7 +88,8 @@ size_t DAG::Node::getIdNodeR() const {
  * @brief Set the index of the right child
  * @param New index of the right child
  */
-void DAG::Node::setIdNodeR(size_t id) {
+void DAG::Node::setIdNodeR(size_t id)
+{
     idNodeR = id;
 }
 

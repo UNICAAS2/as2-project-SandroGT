@@ -1,6 +1,8 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include <limits>
+
 #include "dag.h"
 
 namespace gasprj {
@@ -43,12 +45,11 @@ public:
     void setIdNodeR(size_t id);
 
 private:
+    /* Attributes */
     Type type;
     size_t idInfo, idNodeL, idNodeR;
 };
 
 } // End namespace gasprj
-
-#include "dag_node.cpp"
 
 #endif // NODE_H
