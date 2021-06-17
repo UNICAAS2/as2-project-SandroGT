@@ -41,6 +41,10 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
     drawableTrapezoidalMap(cg3::Point2d(-BOUNDINGBOX, -BOUNDINGBOX),
                            cg3::Point2d(BOUNDINGBOX, BOUNDINGBOX))
 {
+    // Enable openGL transparency (https://learnopengl.com/Advanced-OpenGL/Blending)
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     //NOTE 1: you probably need to initialize some objects in the constructor. You
     //can see how to initialize an attribute in the lines above. This is C++ style
     //attribute initialization (it is different to write an assignment operator in
