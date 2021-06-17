@@ -2,132 +2,202 @@
 
 namespace gasprj {
 
+/**
+ * @brief Default constructor of a trapezoid
+ *
+ * Initialize a trapezoid with no references to any point, segment, trapezoid or DAG leaf.
+ */
 Trapezoid::Trapezoid() :
     idSegmentT(NO_ID), idSegmentB(NO_ID), idPointL(NO_ID), idPointR(NO_ID),
-    idTrapezoidTL(NO_ID), idTrapezoidTR(NO_ID), idTrapezoidBR(NO_ID), idTrapezoidBL(NO_ID)
+    idAdjacentTrapezoidTL(NO_ID), idAdjacentTrapezoidTR(NO_ID),
+    idAdjacentTrapezoidBL(NO_ID), idAdjacentTrapezoidBR(NO_ID),
+    idDagLeaf(0)
 {
-
 }
 
-size_t Trapezoid::getIdSegmentT() {
+/**
+ * @brief Complete constructor of a trapezoid
+ * @param[in] idSegmentT The reference (ID) of the top segment
+ * @param[in] idSegmentB The reference (ID) of the bottom segment
+ * @param[in] idPointL The reference (ID) of the left point
+ * @param[in] idPointR The reference (ID) of the right point
+ * @param[in] idTrapezoidTL The reference (ID) of the top-left adjacent trapezoid
+ * @param[in] idTrapezoidTR The reference (ID) of the top-right adjacent trapezoid
+ * @param[in] idTrapezoidBL The reference (ID) of the bottom-left adjacent trapezoid
+ * @param[in] idTrapezoidBR The reference (ID) of the bottom-right adjacent trapezoid
+ * @param[in] idDagLeaf The reference (ID) of the DAG leaf which represent the trapezoid
+ *
+ * Initialize a trapezoid specifying all its data references.
+ */
+Trapezoid::Trapezoid(size_t idSegmentT, size_t idSegmentB, size_t idPointL, size_t idPointR,
+                     size_t idTrapezoidTL, size_t idTrapezoidTR, size_t idTrapezoidBL, size_t idTrapezoidBR, size_t idDagLeaf) :
+    idSegmentT(idSegmentT), idSegmentB(idSegmentB), idPointL(idPointL), idPointR(idPointR),
+    idAdjacentTrapezoidTL(idTrapezoidTL), idAdjacentTrapezoidTR(idTrapezoidTR),
+    idAdjacentTrapezoidBL(idTrapezoidBL), idAdjacentTrapezoidBR(idTrapezoidBR),
+    idDagLeaf(idDagLeaf)
+{
+}
+
+/**
+ * @brief Get the ID of the top segment
+ * @return The ID of the top segment
+ */
+size_t Trapezoid::getIdSegmentT() const
+{
     return idSegmentT;
 }
 
-void Trapezoid::setIdSegmentT(size_t id) {
+/**
+ * @brief Set the ID of the top segment
+ * @param[in] id The new ID of the top segment
+ */
+void Trapezoid::setIdSegmentT(size_t id)
+{
     idSegmentT = id;
 }
 
-size_t Trapezoid::getIdSegmentB() {
+/**
+ * @brief Get the ID of the bottom segment
+ * @return The ID of the bottom segment
+ */
+size_t Trapezoid::getIdSegmentB() const
+{
     return idSegmentB;
 }
 
-void Trapezoid::setIdSegmentB(size_t id) {
+/**
+ * @brief Set the ID of the bottom segment
+ * @param[in] id The new ID of the bottom segment
+ */
+void Trapezoid::setIdSegmentB(size_t id)
+{
     idSegmentB = id;
 }
 
-size_t Trapezoid::getIdPointL() {
+/**
+ * @brief Get the ID of the left point
+ * @return The ID of the left point
+ */
+size_t Trapezoid::getIdPointL() const
+{
     return idPointL;
 }
 
-void Trapezoid::setIdPointL(size_t id) {
+/**
+ * @brief Set the ID of the left point
+ * @param[in] id The new ID of the left point
+ */
+void Trapezoid::setIdPointL(size_t id)
+{
     idPointL = id;
 }
 
-size_t Trapezoid::getIdPointR() {
+/**
+ * @brief Get the ID of the right point
+ * @return The ID of the right point
+ */
+size_t Trapezoid::getIdPointR() const
+{
     return idPointR;
 }
 
-void Trapezoid::setIdPointR(size_t id) {
+/**
+ * @brief Set the ID of the right point
+ * @param[in] id The new ID of the right point
+ */
+void Trapezoid::setIdPointR(size_t id)
+{
     idPointR = id;
 }
 
-size_t Trapezoid::getIdTrapezoidTL() {
-    return idTrapezoidTL;
+/**
+ * @brief Get the ID of the adjacent top-left trapezoid
+ * @return The ID of the adjacent top-left trapezoid
+ */
+size_t Trapezoid::getIdAdjacencyTL() const
+{
+    return idAdjacentTrapezoidTL;
 }
 
-void Trapezoid::setIdTrapezoidTL(size_t id) {
-    idTrapezoidTL = id;
+/**
+ * @brief Set the ID of the adjacent top-left trapezoid
+ * @param[in] id The new ID of the adjacent top-left trapezoid
+ */
+void Trapezoid::setIdAdjacencyTL(size_t id)
+{
+    idAdjacentTrapezoidTL = id;
 }
 
-size_t Trapezoid::getIdTrapezoidTR() {
-    return idTrapezoidTR;
+/**
+ * @brief Get the ID of the adjacent top-right trapezoid
+ * @return The ID of the adjacent top-right trapezoid
+ */
+size_t Trapezoid::getIdAdjacencyTR() const
+{
+    return idAdjacentTrapezoidTR;
 }
 
-void Trapezoid::setIdTrapezoidTR(size_t id) {
-    idTrapezoidTR = id;
+/**
+ * @brief Set the ID of the adjacent top-right trapezoid
+ * @param[in] id The new ID of the adjacent top-right trapezoid
+ */
+void Trapezoid::setIdAdjacencyTR(size_t id)
+{
+    idAdjacentTrapezoidTR = id;
 }
 
-size_t Trapezoid::getIdTrapezoidBR() {
-    return idTrapezoidBR;
+/**
+ * @brief Get the ID of the adjacent bottom-left trapezoid
+ * @return The ID of the adjacent bottom-left trapezoid
+ */
+size_t Trapezoid::getIdAdjacencyBL() const
+{
+    return idAdjacentTrapezoidBL;
 }
 
-void Trapezoid::setIdTrapezoidBR(size_t id) {
-    idTrapezoidBR = id;
+/**
+ * @brief Set the ID of the adjacent bottom-left trapezoid
+ * @param[in] id The new ID of the adjacent bottom-left trapezoid
+ */
+void Trapezoid::setIdAdjacencyBL(size_t id)
+{
+    idAdjacentTrapezoidBL = id;
 }
 
-size_t Trapezoid::getIdTrapezoidBL() {
-    return idTrapezoidBL;
+/**
+ * @brief Get the ID of the adjacent bottom-right trapezoid
+ * @return The ID of the adjacent bottom-right trapezoid
+ */
+size_t Trapezoid::getIdAdjacencyBR() const
+{
+    return idAdjacentTrapezoidBR;
 }
 
-void Trapezoid::setIdTrapezoidBL(size_t id) {
-    idTrapezoidBL = id;
+/**
+ * @brief Set the ID of the adjacent bottom-right trapezoid
+ * @param[in] id The new ID of the adjacent bottom-right trapezoid
+ */
+void Trapezoid::setIdAdjacencyBR(size_t id)
+{
+    idAdjacentTrapezoidBR = id;
 }
 
-void Trapezoid::updateVertices(const cg3::BoundingBox2 boundingBox) {
-
-    assert(idPointL == NO_ID && idPointR == NO_ID && idSegmentT == NO_ID && idSegmentB == NO_ID);
-
-    vertexTL = cg3::Point2d(boundingBox.min().x(), boundingBox.max().y());
-    vertexTR = cg3::Point2d(boundingBox.max().x(), boundingBox.max().y());
-    vertexBR = cg3::Point2d(boundingBox.max().x(), boundingBox.min().y());
-    vertexBL = cg3::Point2d(boundingBox.min().x(), boundingBox.min().y());
+/**
+ * @brief Get the ID of the DAG leaf related to this trapezoid
+ * @return The ID of the DAG leaf related to this trapezoid
+ */
+size_t Trapezoid::getIdDagLeaf() const
+{
+    return idDagLeaf;
 }
 
-void Trapezoid::updateVertices(const TrapezoidalMapDataset& trapMapData, const cg3::BoundingBox2 boundingBox) {
-    cg3::Segment2d segmentT, segmentB;
-    cg3::Point2d pointL, pointR;
-
-    if(idPointL == NO_ID || idPointR == NO_ID) assert(idSegmentT == NO_ID && idSegmentB == NO_ID);
-
-    if (idPointL != NO_ID) pointL = trapMapData.getPoint(idPointL);
-    else pointL = cg3::Point2d(boundingBox.min().x(), boundingBox.max().y());
-
-    if (idPointR != NO_ID) pointR = trapMapData.getPoint(idPointR);
-    else pointR = cg3::Point2d(boundingBox.max().x(), boundingBox.max().y());
-
-    if (idSegmentT != NO_ID) segmentT = trapMapData.getSegment(idSegmentT);
-    else segmentT = cg3::Segment2d(cg3::Point2d(boundingBox.min().x(), boundingBox.max().y()),
-                                   cg3::Point2d(boundingBox.max().x(), boundingBox.max().y()));
-    if (segmentT.p1().x() > segmentT.p2().x()) segmentT = cg3::Segment2d(segmentT.p2(), segmentT.p1());
-
-    if (idSegmentB != NO_ID) segmentB = trapMapData.getSegment(idSegmentB);
-    else segmentB = cg3::Segment2d(cg3::Point2d(boundingBox.min().x(), boundingBox.min().y()),
-                                   cg3::Point2d(boundingBox.max().x(), boundingBox.min().y()));
-    if (segmentB.p1().x() > segmentB.p2().x()) segmentB = cg3::Segment2d(segmentB.p2(), segmentB.p1());
-
-    double mT = (segmentT.p2().y()-segmentT.p1().y()) / (segmentT.p2().x()-segmentT.p1().x());
-    double mB = (segmentB.p2().y()-segmentB.p1().y()) / (segmentB.p2().x()-segmentB.p1().x());
-
-    vertexTL = cg3::Point2d(pointL.x(), segmentT.p1().y() + mT * (pointL.x() - segmentT.p1().x()));
-    vertexTR = cg3::Point2d(pointR.x(), segmentT.p2().y() - mT * (segmentT.p2().x() - pointR.x()));
-    vertexBR = cg3::Point2d(pointR.x(), segmentB.p2().y() - mB * (segmentB.p2().x() - pointR.x()));
-    vertexBL = cg3::Point2d(pointL.x(), segmentB.p1().y() + mB * (pointL.x() - segmentB.p1().x()));
+/**
+ * @brief Set the ID of the DAG leaf related to this trapezoid
+ * @param[in] id The new ID of the DAG leaf related to this trapezoid
+ */
+void Trapezoid::setIdDagLeaf(size_t id)
+{
+    idDagLeaf = id;
 }
 
-const cg3::Point2d& Trapezoid::getVertexTL() const {
-    return vertexTL;
-}
-
-const cg3::Point2d& Trapezoid::getVertexTR() const {
-    return vertexTR;
-}
-
-const cg3::Point2d& Trapezoid::getVertexBR() const {
-    return vertexBR;
-}
-
-const cg3::Point2d& Trapezoid::getVertexBL() const {
-    return vertexBL;
-}
-
-}
+} // End namespace gasprj
