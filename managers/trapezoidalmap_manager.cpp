@@ -40,6 +40,9 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
     drawableTrapezoidalMap(&drawableTrapezoidalMapDataset,
                            cg3::Point2d(-BOUNDINGBOX, -BOUNDINGBOX), cg3::Point2d(BOUNDINGBOX, BOUNDINGBOX))
 {
+    // Initialize the trapezoidal map data structures
+    gasprj::initTrapezoidalMap(drawableTrapezoidalMap, dag);
+
     // Enable openGL transparency (https://learnopengl.com/Advanced-OpenGL/Blending)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -288,6 +291,7 @@ void TrapezoidalMapManager::clearTrapezoidalMap()
     //Clear here your trapezoidal map data structure.
     drawableTrapezoidalMap.clear();
     dag.clear();
+    gasprj::initTrapezoidalMap(drawableTrapezoidalMap, dag);
 
 
 
