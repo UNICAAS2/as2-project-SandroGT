@@ -33,17 +33,26 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
     QFrame(parent),
     ui(new Ui::TrapezoidalMapManager),
     mainWindow(static_cast<cg3::viewer::MainWindow&>(*parent)),
-    drawableBoundingBox(cg3::Point2d(-BOUNDINGBOX, -BOUNDINGBOX),
-                cg3::Point2d(BOUNDINGBOX, BOUNDINGBOX)),
+    drawableBoundingBox(cg3::Point2d(-BOUNDINGBOX, -BOUNDINGBOX), cg3::Point2d(BOUNDINGBOX, BOUNDINGBOX)),
     firstPointSelectedColor(220, 80, 80),
     firstPointSelectedSize(5),
     isFirstPointSelected(false),
-    drawableTrapezoidalMap(cg3::Point2d(-BOUNDINGBOX, -BOUNDINGBOX),
-                           cg3::Point2d(BOUNDINGBOX, BOUNDINGBOX))
+    drawableTrapezoidalMap(&drawableTrapezoidalMapDataset,
+                           cg3::Point2d(-BOUNDINGBOX, -BOUNDINGBOX), cg3::Point2d(BOUNDINGBOX, BOUNDINGBOX))
 {
     // Enable openGL transparency (https://learnopengl.com/Advanced-OpenGL/Blending)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Only way I found to correctly show the first point selected, without it being discarded by the presence
+    // of the trapezoids (which are in its front someway), is to disable the depth testing. Not a great solution, since
+    // the order between segments and trapezoid is compromised (https://learnopengl.com/Advanced-OpenGL/Depth-testing)
+    //glDisable(GL_DEPTH_TEST);
+
+    // Initialize the srand seed for the random color generation (https://en.cppreference.com/w/c/numeric/random/srand)
+    srand((unsigned)time(0));
+
+
 
     //NOTE 1: you probably need to initialize some objects in the constructor. You
     //can see how to initialize an attribute in the lines above. This is C++ style
@@ -200,9 +209,8 @@ void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& seg
     //already in the structure. You could use the same approach for your trapezoidal map to make
     //it more efficient in memory. However, depending on how you implement your algorithms and data 
     //structures, you could save directly the point (Point2d) in each trapezoid (it is fine).
-    drawableTrapezoidalMap.setHighlightedTrapezoidId(NO_ID);
-    gasprj::addSegmentToTrapezoidalMap(segment, drawableTrapezoidalMapDataset,
-                                       drawableTrapezoidalMap, dag);
+    drawableTrapezoidalMap.setIdHighlightedTrapezoid(gasprj::Trapezoid::NO_ID);
+    gasprj::addSegmentToTrapezoidalMap(segment, drawableTrapezoidalMap, dag);
 
 
 
@@ -246,7 +254,7 @@ void TrapezoidalMapManager::queryTrapezoidalMap(const cg3::Point2d& queryPoint)
     //in the structure). This is a bit more complicated, but a better structure, because, in this case
     //TrapezoidalMap and DAG are two separate general purpose data structures that an algorithm uses.
     //THINK ABOUT YOUR STRUCTURE BEFORE WRITING CODE!
-    size_t id = gasprj::queryTrapezoidalMap(queryPoint, drawableTrapezoidalMapDataset, dag);
+    size_t id = gasprj::queryTrapezoidalMap(queryPoint, drawableTrapezoidalMap, dag);
 
 
 
@@ -258,7 +266,7 @@ void TrapezoidalMapManager::queryTrapezoidalMap(const cg3::Point2d& queryPoint)
     //When you find the trapezoid in which the point is contained, you should highlight
     //the output trapezoid in the canvas (DrawableTrapezoidMap should implement the method
     //to do that).
-    drawableTrapezoidalMap.setHighlightedTrapezoidId(id);
+    drawableTrapezoidalMap.setIdHighlightedTrapezoid(id);
 
 
 
