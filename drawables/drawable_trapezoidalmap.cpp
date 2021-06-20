@@ -6,6 +6,15 @@
 
 namespace gasprj {
 
+/// Transparency of every non-selected trapezoid
+const float DrawableTrapezoidalMap::TRAPEZOID_TRANSPARENCY = 0.25;
+/// Color of the highlighted trapezoid
+const cg3::Color DrawableTrapezoidalMap::COLOR_TRAPEZOID_SELECTED = cg3::Color(0.5*255, 0.5*255, 0.5*255, 0.75*255);
+/// Color of the vertical lines separating adjacent trapezoids
+const cg3::Color DrawableTrapezoidalMap::COLOR_VERTICAL_LINE = cg3::Color(0.1*255, 0.1*255, 0.1*255, 0.75*255);
+/// Width of the vertical lines separating adjacent trapezoids
+const float DrawableTrapezoidalMap::WIDTH_VERTICAL_LINE = 0.50;
+
 /**
  * @brief The constructor of the drawable trapezoidal map
  * @param[in] refTrapezoidalMapDataset The reference to the trapezoidal map dataset
@@ -24,42 +33,9 @@ DrawableTrapezoidalMap::DrawableTrapezoidalMap(TrapezoidalMapDataset *const trap
  */
 void DrawableTrapezoidalMap::draw() const
 {
-    // Define the width of the vertical lines
-    glLineWidth(WIDTH_VERTICAL_LINE);
-
     // Cycle over all the drawable trapezoids
-    size_t i = 0;
-    for (const DrawableTrapezoid &dTrap : trapezoids) {
-
-        // Define the color of the vertical segments
-        glColor4d(COLOR_VERTICAL_LINE.redF(), COLOR_VERTICAL_LINE.greenF(),
-                  COLOR_VERTICAL_LINE.blueF(), COLOR_VERTICAL_LINE.alphaF());
-
-        // Draw the vertical segments
-        glBegin(GL_LINES);
-        glVertex2d(dTrap.getVertexTL().x(), dTrap.getVertexTL().y());
-        glVertex2d(dTrap.getVertexBL().x(), dTrap.getVertexBL().y());
-        glVertex2d(dTrap.getVertexTR().x(), dTrap.getVertexTR().y());
-        glVertex2d(dTrap.getVertexBR().x(), dTrap.getVertexBR().y());
-        glEnd();
-
-        // Define the trapezoid color
-        if (i == idHighlightedTrapezoid)
-            glColor4d(COLOR_TRAPEZOID_SELECTED.redF(), COLOR_TRAPEZOID_SELECTED.greenF(),
-                      COLOR_TRAPEZOID_SELECTED.blueF(), COLOR_TRAPEZOID_SELECTED.alphaF());
-        else
-            glColor4d(dTrap.getColorR(), dTrap.getColorG(), dTrap.getColorB(), TRAPEZOID_TRANSPARENCY);
-
-        // Draw the trapezoid
-        glBegin(GL_POLYGON);
-        glVertex2d(dTrap.getVertexTL().x(), dTrap.getVertexTL().y());
-        glVertex2d(dTrap.getVertexTR().x(), dTrap.getVertexTR().y());
-        glVertex2d(dTrap.getVertexBR().x(), dTrap.getVertexBR().y());
-        glVertex2d(dTrap.getVertexBL().x(), dTrap.getVertexBL().y());
-        glEnd();
-
-        ++i;
-    }
+    for (const DrawableTrapezoid &drawableTrapezoid : trapezoids)
+        drawableTrapezoid.draw();
 }
 
 /**
@@ -95,7 +71,12 @@ size_t DrawableTrapezoidalMap::getIdHighlightedTrapezoid() const
  */
 void DrawableTrapezoidalMap::setIdHighlightedTrapezoid(size_t id)
 {
+    assert(id != Trapezoid::NO_ID ? id < trapezoids.size() : true);
+    // Un-select the previous highlighted trapezoid
+    if (idHighlightedTrapezoid != Trapezoid::NO_ID) trapezoids[idHighlightedTrapezoid].setHighlighted(false);
+    // Highlights the new trapezoid
     idHighlightedTrapezoid = id;
+    if (idHighlightedTrapezoid != Trapezoid::NO_ID) trapezoids[idHighlightedTrapezoid].setHighlighted(true);
 }
 
 /**
@@ -225,6 +206,14 @@ void setDrawableTrapezoidVertices(const DrawableTrapezoidalMap &dTrapMap, Drawab
     dTrap.setVertexTR(cg3::Point2d(pointR.x(), segmentT.p2().y() - mT * (segmentT.p2().x() - pointR.x()))); // Top-right
     dTrap.setVertexBR(cg3::Point2d(pointR.x(), segmentB.p2().y() - mB * (segmentB.p2().x() - pointR.x()))); // Bottom-right
     dTrap.setVertexBL(cg3::Point2d(pointL.x(), segmentB.p1().y() + mB * (pointL.x() - segmentB.p1().x()))); // Bottom-left
+
+    /* Compute the bounding box for the drawable object */
+    dTrap.setBoundingBox(
+        cg3::Point2d(std::min(dTrap.getVertexTL().x(), dTrap.getVertexBL().x()),
+                     std::min(dTrap.getVertexBL().y(), dTrap.getVertexBR().y())),   // Bottom-left corner
+        cg3::Point2d(std::max(dTrap.getVertexTR().x(), dTrap.getVertexBR().x()),
+                     std::max(dTrap.getVertexTL().y(), dTrap.getVertexTR().y()))    // Top-right corner
+    );
 }
 
 /**

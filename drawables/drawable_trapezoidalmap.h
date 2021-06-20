@@ -17,6 +17,12 @@ namespace gasprj {
 class DrawableTrapezoidalMap : public TrapezoidalMap, public cg3::DrawableObject
 {
 public:
+    /* Public costants */
+    const static float TRAPEZOID_TRANSPARENCY;
+    const static cg3::Color COLOR_TRAPEZOID_SELECTED;
+    const static cg3::Color COLOR_VERTICAL_LINE;
+    const static float WIDTH_VERTICAL_LINE;
+
     /* Constructors */
     DrawableTrapezoidalMap(TrapezoidalMapDataset *const trapezoidalMapDataset,
                            const cg3::Point2d &boundingBoxCornerBL, const cg3::Point2d &boundingBoxCornerTR);
@@ -39,16 +45,6 @@ public:
     void clear();
 
 private:
-    /* Costant parameters */
-    // Transparency of every non-selected trapezoid
-    const float TRAPEZOID_TRANSPARENCY = 0.25;
-    // Color of the highlighted trapezoid
-    const cg3::Color COLOR_TRAPEZOID_SELECTED = cg3::Color(0.5*255, 0.5*255, 0.5*255, 0.75*255);
-    // Color of the vertical lines separating adjacent trapezoids
-    const cg3::Color COLOR_VERTICAL_LINE = cg3::Color(0.1*255, 0.1*255, 0.1*255, 0.75*255);
-    // Width of the vertical lines separating adjacent trapezoids
-    const float WIDTH_VERTICAL_LINE = 0.50;
-
     /* Attributes */
     std::vector<DrawableTrapezoid> trapezoids;
     size_t idHighlightedTrapezoid;

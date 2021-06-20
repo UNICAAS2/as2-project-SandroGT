@@ -4,14 +4,70 @@
 
 #include <cg3/viewer/opengl_objects/opengl_objects2.h>
 
+#include "drawables/drawable_trapezoidalmap.h"
+
 namespace gasprj {
 
 /**
  * @brief Default constructor of a drawable trapezoid
  */
 DrawableTrapezoid::DrawableTrapezoid(Trapezoid trapezoid) :
-    Trapezoid(trapezoid)
+    Trapezoid(trapezoid), highlighted(false)
 {
+}
+
+/**
+ * @brief Draw the trapezoid
+ */
+void DrawableTrapezoid::draw() const
+{
+    // Define the width of the vertical lines
+    glLineWidth(DrawableTrapezoidalMap::WIDTH_VERTICAL_LINE);
+
+    // Define the color of the vertical segments
+    glColor4d(DrawableTrapezoidalMap::COLOR_VERTICAL_LINE.redF(), DrawableTrapezoidalMap::COLOR_VERTICAL_LINE.greenF(),
+              DrawableTrapezoidalMap::COLOR_VERTICAL_LINE.blueF(), DrawableTrapezoidalMap::COLOR_VERTICAL_LINE.alphaF());
+
+    // Draw the vertical segments
+    glBegin(GL_LINES);
+    glVertex2d(this->vertexTL.x(), this->vertexTL.y());
+    glVertex2d(this->vertexBL.x(), this->vertexBL.y());
+    glVertex2d(this->vertexTR.x(), this->vertexTR.y());
+    glVertex2d(this->vertexBR.x(), this->vertexBR.y());
+    glEnd();
+
+    // Define the trapezoid color
+    if (this->highlighted)
+        glColor4d(DrawableTrapezoidalMap::COLOR_TRAPEZOID_SELECTED.redF(), DrawableTrapezoidalMap::COLOR_TRAPEZOID_SELECTED.greenF(),
+                  DrawableTrapezoidalMap::COLOR_TRAPEZOID_SELECTED.blueF(), DrawableTrapezoidalMap::COLOR_TRAPEZOID_SELECTED.alphaF());
+    else
+        glColor4d(this->color.redF(), this->color.greenF(), this->color.blueF(), DrawableTrapezoidalMap::TRAPEZOID_TRANSPARENCY);
+
+    // Draw the trapezoid
+    glBegin(GL_POLYGON);
+    glVertex2d(this->vertexTL.x(), this->vertexTL.y());
+    glVertex2d(this->vertexTR.x(), this->vertexTR.y());
+    glVertex2d(this->vertexBR.x(), this->vertexBR.y());
+    glVertex2d(this->vertexBL.x(), this->vertexBL.y());
+    glEnd();
+}
+
+/**
+ * @brief Get the center of the scene
+ * @return The center of the scene as a 3D point
+ */
+cg3::Point3d DrawableTrapezoid::sceneCenter() const
+{
+    return cg3::Point3d(this->boundingBox.center().x(), this->boundingBox.center().y(), 0);
+}
+
+/**
+ * @brief Get the radius of the scene
+ * @return The radius of the scene
+ */
+double DrawableTrapezoid::sceneRadius() const
+{
+    return this->boundingBox.diag();
 }
 
 /**
@@ -60,6 +116,43 @@ void DrawableTrapezoid::setColor(int h, int s, int v)
 {
     // About QColor HSV (https://linux.die.net/man/3/qcolor)
     color.setHsv(h, s, v);
+}
+
+/**
+ * @brief Check if the trapezoid is higlighted or not
+ * @return True if the trapezoid is higlighted, false otherwise
+ */
+bool DrawableTrapezoid::isHighlighted() const
+{
+    return highlighted;
+}
+
+/**
+ * @brief Set whether the trapezoid should be higlighted or not
+ * @param[in] highlight True to highlight the trapezoid, false to not
+ */
+void DrawableTrapezoid::setHighlighted(bool highlight)
+{
+    highlighted = highlight;
+}
+
+/**
+ * @brief Get the bounding box of the drawable trapezoid
+ * @return The bounding box of the drawable trapezoid
+ */
+const cg3::BoundingBox2 &DrawableTrapezoid::getBoundingBox() const
+{
+    return boundingBox;
+}
+
+/**
+ * @brief Set the bounding box of the drawable trapezoid
+ * @param[in] boundingBoxCornerBL The bottom left corner of the new bounding box
+ * @param[in] boundingBoxCornerTR The bottom right corner of the new bounding box
+ */
+void DrawableTrapezoid::setBoundingBox(const cg3::Point2d &boundingBoxCornerBL, const cg3::Point2d &boundingBoxCornerTR)
+{
+    boundingBox = cg3::BoundingBox2(boundingBoxCornerBL, boundingBoxCornerTR);
 }
 
 /**
