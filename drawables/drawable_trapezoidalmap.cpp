@@ -6,15 +6,6 @@
 
 namespace gasprj {
 
-/// Transparency of every non-selected trapezoid
-const float DrawableTrapezoidalMap::TRAPEZOID_TRANSPARENCY = 0.25;
-/// Color of the highlighted trapezoid
-const cg3::Color DrawableTrapezoidalMap::COLOR_TRAPEZOID_SELECTED = cg3::Color(0.5*255, 0.5*255, 0.5*255, 0.75*255);
-/// Color of the vertical lines separating adjacent trapezoids
-const cg3::Color DrawableTrapezoidalMap::COLOR_VERTICAL_LINE = cg3::Color(0.1*255, 0.1*255, 0.1*255, 0.75*255);
-/// Width of the vertical lines separating adjacent trapezoids
-const float DrawableTrapezoidalMap::WIDTH_VERTICAL_LINE = 0.50;
-
 /**
  * @brief The constructor of the drawable trapezoidal map
  * @param[in] refTrapezoidalMapDataset The reference to the trapezoidal map dataset

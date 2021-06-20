@@ -4,9 +4,15 @@
 
 #include <cg3/viewer/opengl_objects/opengl_objects2.h>
 
-#include "drawables/drawable_trapezoidalmap.h"
-
 namespace gasprj {
+
+/* Private static costants */
+const float DrawableTrapezoid::TRAPEZOID_TRANSPARENCY = 0.25;
+const cg3::Color DrawableTrapezoid::COLOR_TRAPEZOID_SELECTED = cg3::Color(0.5*255, 0.5*255, 0.5*255, 0.75*255);
+const cg3::Color DrawableTrapezoid::COLOR_VERTICAL_LINE = cg3::Color(0.1*255, 0.1*255, 0.1*255, 0.75*255);
+const float DrawableTrapezoid::WIDTH_VERTICAL_LINE = 0.50;
+
+
 
 /**
  * @brief Default constructor of a drawable trapezoid
@@ -22,11 +28,11 @@ DrawableTrapezoid::DrawableTrapezoid(Trapezoid trapezoid) :
 void DrawableTrapezoid::draw() const
 {
     // Define the width of the vertical lines
-    glLineWidth(DrawableTrapezoidalMap::WIDTH_VERTICAL_LINE);
+    glLineWidth(DrawableTrapezoid::WIDTH_VERTICAL_LINE);
 
     // Define the color of the vertical segments
-    glColor4d(DrawableTrapezoidalMap::COLOR_VERTICAL_LINE.redF(), DrawableTrapezoidalMap::COLOR_VERTICAL_LINE.greenF(),
-              DrawableTrapezoidalMap::COLOR_VERTICAL_LINE.blueF(), DrawableTrapezoidalMap::COLOR_VERTICAL_LINE.alphaF());
+    glColor4d(DrawableTrapezoid::COLOR_VERTICAL_LINE.redF(), DrawableTrapezoid::COLOR_VERTICAL_LINE.greenF(),
+              DrawableTrapezoid::COLOR_VERTICAL_LINE.blueF(), DrawableTrapezoid::COLOR_VERTICAL_LINE.alphaF());
 
     // Draw the vertical segments
     glBegin(GL_LINES);
@@ -38,10 +44,10 @@ void DrawableTrapezoid::draw() const
 
     // Define the trapezoid color
     if (this->highlighted)
-        glColor4d(DrawableTrapezoidalMap::COLOR_TRAPEZOID_SELECTED.redF(), DrawableTrapezoidalMap::COLOR_TRAPEZOID_SELECTED.greenF(),
-                  DrawableTrapezoidalMap::COLOR_TRAPEZOID_SELECTED.blueF(), DrawableTrapezoidalMap::COLOR_TRAPEZOID_SELECTED.alphaF());
+        glColor4d(DrawableTrapezoid::COLOR_TRAPEZOID_SELECTED.redF(), DrawableTrapezoid::COLOR_TRAPEZOID_SELECTED.greenF(),
+                  DrawableTrapezoid::COLOR_TRAPEZOID_SELECTED.blueF(), DrawableTrapezoid::COLOR_TRAPEZOID_SELECTED.alphaF());
     else
-        glColor4d(this->color.redF(), this->color.greenF(), this->color.blueF(), DrawableTrapezoidalMap::TRAPEZOID_TRANSPARENCY);
+        glColor4d(this->color.redF(), this->color.greenF(), this->color.blueF(), DrawableTrapezoid::TRAPEZOID_TRANSPARENCY);
 
     // Draw the trapezoid
     glBegin(GL_POLYGON);

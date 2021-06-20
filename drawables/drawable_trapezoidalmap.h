@@ -17,12 +17,6 @@ namespace gasprj {
 class DrawableTrapezoidalMap : public TrapezoidalMap, public cg3::DrawableObject
 {
 public:
-    /* Public costants */
-    const static float TRAPEZOID_TRANSPARENCY;
-    const static cg3::Color COLOR_TRAPEZOID_SELECTED;
-    const static cg3::Color COLOR_VERTICAL_LINE;
-    const static float WIDTH_VERTICAL_LINE;
-
     /* Constructors */
     DrawableTrapezoidalMap(TrapezoidalMapDataset *const trapezoidalMapDataset,
                            const cg3::Point2d &boundingBoxCornerBL, const cg3::Point2d &boundingBoxCornerTR);
