@@ -45,14 +45,14 @@ public:
     void clear();
 
 private:
+    /* Internal methods declaration */
+    void setDrawableTrapezoidVertices(DrawableTrapezoid &dTrap);
+    void setDrawableTrapezoidColor(DrawableTrapezoid &dTrap);
+
     /* Attributes */
     std::vector<DrawableTrapezoid> trapezoids;
     size_t idHighlightedTrapezoid;
 };
-
-/* Helper functions */
-void setDrawableTrapezoidVertices(const DrawableTrapezoidalMap &dTrapMap, DrawableTrapezoid &dTrap);
-void setDrawableTrapezoidColor(DrawableTrapezoid &dTrap);
 
 } // End namespace gasprj
 

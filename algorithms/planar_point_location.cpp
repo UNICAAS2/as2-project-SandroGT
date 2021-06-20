@@ -6,6 +6,27 @@
 
 namespace gasprj {
 
+namespace gasprjint {
+
+/* Internal functions declaration */
+
+void updateOneCrossedTrapezoid(const cg3::Segment2d &segment, size_t idCrossedTrap, TrapezoidalMap &trapMap, DAG &dag);
+void updateMoreCrossedTrapezoids(const cg3::Segment2d &segment, const std::vector<size_t> &crossedTraps,
+                                 TrapezoidalMap &trapMap, DAG &dag);
+void crossedTrapezoids(const cg3::Segment2d &segment, const TrapezoidalMap &trapMap, const DAG &dag,
+                       std::vector<size_t> &crossedTraps);
+size_t queryToBuildTrapezoidalMap(const cg3::Segment2d &segment, const TrapezoidalMap trapMap, const DAG &dag);
+bool doesOverlapL(const cg3::Segment2d &segment, size_t idTrapezoid, const TrapezoidalMap &trapMap);
+bool doesOverlapR(const cg3::Segment2d &segment, size_t idTrapezoid, const TrapezoidalMap &trapMap);
+bool hasEndpointTL(size_t idTrapezoid, const TrapezoidalMap &trapMap);
+bool hasEndpointBL(size_t idTrapezoid, const TrapezoidalMap &trapMap);
+bool hasEndpointTR(size_t idTrapezoid, const TrapezoidalMap &trapMap);
+bool hasEndpointBR(size_t idTrapezoid, const TrapezoidalMap &trapMap);
+
+} // End namespace gasprjint
+
+
+
 /* Builders */
 
 /**
@@ -52,7 +73,7 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d &segment, TrapezoidalMap &t
 
     // Find the trapezoids crossed by the new segment
     std::vector<size_t> crossedTraps = std::vector<size_t>();
-    crossedTrapezoids(orderedSegment, trapMap, dag, crossedTraps);
+    gasprjint::crossedTrapezoids(orderedSegment, trapMap, dag, crossedTraps);
     assert(crossedTraps.size() > 0);
 
     /*
@@ -62,11 +83,11 @@ void addSegmentToTrapezoidalMap(const cg3::Segment2d &segment, TrapezoidalMap &t
 
     // New segment lying entirely in one trapezoid
     if (crossedTraps.size() == 1)
-        updateOneCrossedTrapezoid(orderedSegment, crossedTraps[0], trapMap, dag);
+        gasprjint::updateOneCrossedTrapezoid(orderedSegment, crossedTraps[0], trapMap, dag);
 
     // New segment crossing two or more trapezoids
     else
-        updateMoreCrossedTrapezoids(orderedSegment, crossedTraps, trapMap, dag);
+        gasprjint::updateMoreCrossedTrapezoids(orderedSegment, crossedTraps, trapMap, dag);
 }
 
 /* Query */
@@ -149,7 +170,9 @@ size_t queryTrapezoidalMap(const cg3::Point2d &point, const TrapezoidalMap trapM
 
 
 
-/* Helper functions */
+namespace gasprjint {
+
+/* Internal functions implementation */
 
 /**
  * @brief Update the trapezoidal map and DAG data strucures when the new segment crosses one trapezoid
@@ -167,10 +190,14 @@ void updateOneCrossedTrapezoid(const cg3::Segment2d &segment, size_t idCrossedTr
     TrapezoidalMapDataset &trapMapData = *trapMap.getRefTrapezoidalMapDataset();
 
     // Define the variables for all the IDs, trapezoids and nodes that will be computed
-    size_t idAvail;                                                           // Support variable for next available ID
-    size_t idTrapT, idTrapB, idTrapL, idTrapR;                                // New trapezoid IDs
-    size_t idNodeXL, idNodeXR, idNodeY, idLeafT, idLeafB, idLeafL, idLeafR;   // New DAG leaf and node IDs
-    Trapezoid trap; DAG::Node node;                                           // New trapezoid and node variables
+    size_t idAvail;                                                    // Support variable for next available ID
+    size_t idTrapT = Trapezoid::NO_ID, idTrapB = Trapezoid::NO_ID,     // New trapezoid IDs
+           idTrapL = Trapezoid::NO_ID, idTrapR = Trapezoid::NO_ID;
+    size_t idNodeXL = DAG::Node::NO_ID, idNodeXR = DAG::Node::NO_ID,   // New DAG leaf and node IDs
+           idNodeY = DAG::Node::NO_ID, idLeafT = DAG::Node::NO_ID,
+           idLeafB = DAG::Node::NO_ID, idLeafL = DAG::Node::NO_ID,
+           idLeafR = DAG::Node::NO_ID;
+    Trapezoid trap; DAG::Node node;                                    // New trapezoid and node variables
 
     // Find the IDs of the segment and its endpoints
     bool found;
@@ -294,12 +321,18 @@ void updateMoreCrossedTrapezoids(const cg3::Segment2d &segment,  const std::vect
     TrapezoidalMapDataset &trapMapData = *trapMap.getRefTrapezoidalMapDataset();
 
     // Define the variables for all the IDs, trapezoids and nodes that will be computed
-    size_t idAvail;                                                           // Support variable for next available ID
-    size_t idTrapT, idTrapB, idTrapL, idTrapR;                                // New trapezoid IDs
-    size_t idNodeXL, idNodeXR, idNodeY, idLeafT, idLeafB, idLeafL, idLeafR;   // New DAG leaf and node IDs
-    size_t idPrevTrapT, idPrevTrapB, idPrevLeafT, idPrevLeafB;                // Backup IDs of trapezoids and leaves
-    Trapezoid trapT, trapB, prevTrap, *prevTrapT, *prevTrapB;                 // Backup of trapezoids
-    Trapezoid trap; DAG::Node node;                                           // New trapezoid and node variables
+    size_t idAvail;                                                    // Support variable for next available ID
+    size_t idTrapT = Trapezoid::NO_ID, idTrapB = Trapezoid::NO_ID,     // New trapezoid IDs
+           idTrapL = Trapezoid::NO_ID, idTrapR = Trapezoid::NO_ID;
+
+    size_t idNodeXL = DAG::Node::NO_ID, idNodeXR = DAG::Node::NO_ID,   // New DAG leaf and node IDs
+           idNodeY = DAG::Node::NO_ID, idLeafT = DAG::Node::NO_ID,
+           idLeafB = DAG::Node::NO_ID, idLeafL = DAG::Node::NO_ID,
+           idLeafR = DAG::Node::NO_ID;
+    size_t idPrevTrapT = Trapezoid::NO_ID, idPrevTrapB = Trapezoid::NO_ID,   // Backup IDs of trapezoids and leaves
+           idPrevLeafT = DAG::Node::NO_ID, idPrevLeafB = DAG::Node::NO_ID;
+    Trapezoid trapT, trapB, prevTrap, *prevTrapT, *prevTrapB;                // Backup of trapezoids
+    Trapezoid trap; DAG::Node node;                                          // New trapezoid and node variables
 
     // Actual crossed trapezoid
     size_t idCrossedTrap; Trapezoid crossedTrap;
@@ -641,7 +674,7 @@ void crossedTrapezoids(const cg3::Segment2d &segment, const TrapezoidalMap &trap
         #ifdef NDEBUG
         // If the right point of the trapezoid lies below the segment, move to the top-right adjacency
         else {
-            idTrap = trapMap.getTrapezoid(idTrap).getIdTrapezoidTR();
+            idTrap = trapMap.getTrapezoid(idTrap).getIdAdjacencyTR();
         }
         #else
         // If the right point of the trapezoid lies below the segment, move to the top-right adjacency
@@ -871,5 +904,7 @@ bool hasEndpointBR(size_t idTrapezoid, const TrapezoidalMap &trapMap)
     else
         return segmentB.p1() == trapMapData.getPoint(trapMap.getTrapezoid(idTrapezoid).getIdPointR());
 }
+
+} // End namespace gasprjint
 
 } // End namespace gasprj

@@ -117,7 +117,7 @@ size_t DrawableTrapezoidalMap::size() const
 void DrawableTrapezoidalMap::addTrapezoid(const Trapezoid &trapezoid)
 {
     DrawableTrapezoid drawableTrapezoid = DrawableTrapezoid(trapezoid);
-    setDrawableTrapezoidVertices(*this, drawableTrapezoid);
+    setDrawableTrapezoidVertices(drawableTrapezoid);
     setDrawableTrapezoidColor(drawableTrapezoid);
 
     trapezoids.push_back(drawableTrapezoid);
@@ -132,7 +132,7 @@ void DrawableTrapezoidalMap::overwriteTrapezoid(const Trapezoid &trapezoid, size
 {
     assert(id < trapezoids.size());
     DrawableTrapezoid drawableTrapezoid = DrawableTrapezoid(trapezoid);
-    setDrawableTrapezoidVertices(*this, drawableTrapezoid);
+    setDrawableTrapezoidVertices(drawableTrapezoid);
     setDrawableTrapezoidColor(drawableTrapezoid);
 
     trapezoids[id] = drawableTrapezoid;
@@ -148,14 +148,13 @@ void DrawableTrapezoidalMap::clear() {
 
 
 
-/* Helper functions */
+/* Internal methods declaration */
 
 /**
  * @brief Compute the vertices of a drawable trapezoid
- * @param[in] dTrapMap The drawable trapezoidal map
  * @param[in,out] dTrap The drawable trapezoid
  */
-void setDrawableTrapezoidVertices(const DrawableTrapezoidalMap &dTrapMap, DrawableTrapezoid &dTrap)
+void DrawableTrapezoidalMap::setDrawableTrapezoidVertices(DrawableTrapezoid &dTrap)
 {
     // The actual segments and points defining the trapezoid
     cg3::Segment2d segmentT, segmentB;
@@ -168,33 +167,33 @@ void setDrawableTrapezoidVertices(const DrawableTrapezoidalMap &dTrapMap, Drawab
 
     // Retrieve the left point
     if (dTrap.getIdPointL() != Trapezoid::NO_ID)
-        pointL = dTrapMap.getRefTrapezoidalMapDataset()->getPoint(dTrap.getIdPointL());
+        pointL = this->getRefTrapezoidalMapDataset()->getPoint(dTrap.getIdPointL());
     else
-        pointL = cg3::Point2d(dTrapMap.getBoundingBox().min().x(), dTrapMap.getBoundingBox().max().y());
+        pointL = cg3::Point2d(this->getBoundingBox().min().x(), this->getBoundingBox().max().y());
 
     // Retrieve the right point
     if (dTrap.getIdPointR() != Trapezoid::NO_ID)
-        pointR = dTrapMap.getRefTrapezoidalMapDataset()->getPoint(dTrap.getIdPointR());
+        pointR = this->getRefTrapezoidalMapDataset()->getPoint(dTrap.getIdPointR());
     else
-        pointR = cg3::Point2d(dTrapMap.getBoundingBox().max().x(), dTrapMap.getBoundingBox().max().y());
+        pointR = cg3::Point2d(this->getBoundingBox().max().x(), this->getBoundingBox().max().y());
 
     // Retrieve the top segment
     if (dTrap.getIdSegmentT() != Trapezoid::NO_ID) {
-        segmentT = dTrapMap.getRefTrapezoidalMapDataset()->getSegment(dTrap.getIdSegmentT());
+        segmentT = this->getRefTrapezoidalMapDataset()->getSegment(dTrap.getIdSegmentT());
         if (segmentT.p1().x() > segmentT.p2().x()) segmentT = cg3::Segment2d(segmentT.p2(), segmentT.p1());
     }
     else
-        segmentT = cg3::Segment2d(cg3::Point2d(dTrapMap.getBoundingBox().min().x(), dTrapMap.getBoundingBox().max().y()),
-                                  cg3::Point2d(dTrapMap.getBoundingBox().max().x(), dTrapMap.getBoundingBox().max().y()));
+        segmentT = cg3::Segment2d(cg3::Point2d(this->getBoundingBox().min().x(), this->getBoundingBox().max().y()),
+                                  cg3::Point2d(this->getBoundingBox().max().x(), this->getBoundingBox().max().y()));
 
     // Retrieve the bottom segment
     if (dTrap.getIdSegmentB() != Trapezoid::NO_ID) {
-        segmentB = dTrapMap.getRefTrapezoidalMapDataset()->getSegment(dTrap.getIdSegmentB());
+        segmentB = this->getRefTrapezoidalMapDataset()->getSegment(dTrap.getIdSegmentB());
         if (segmentB.p1().x() > segmentB.p2().x()) segmentB = cg3::Segment2d(segmentB.p2(), segmentB.p1());
     }
     else
-        segmentB = cg3::Segment2d(cg3::Point2d(dTrapMap.getBoundingBox().min().x(), dTrapMap.getBoundingBox().min().y()),
-                                  cg3::Point2d(dTrapMap.getBoundingBox().max().x(), dTrapMap.getBoundingBox().min().y()));
+        segmentB = cg3::Segment2d(cg3::Point2d(this->getBoundingBox().min().x(), this->getBoundingBox().min().y()),
+                                  cg3::Point2d(this->getBoundingBox().max().x(), this->getBoundingBox().min().y()));
 
     /* Compute the intersections between the segments and the vertical lines passing through the points */
 
@@ -217,16 +216,17 @@ void setDrawableTrapezoidVertices(const DrawableTrapezoidalMap &dTrapMap, Drawab
 }
 
 /**
- * @brief setDrawableTrapezoidColor
- * @param[in,out] dTrap
+ * @brief Set a random color to the drawable trapezoid
+ * @param[in,out] dTrap The drawable trapezoid
+ *
+ * Set the drawable trapezoid color with random:
+ *  - hue in the interval [0,359]
+ *  - saturation in the interval [128,255]
+ *  - value in the interval [128,255]
+ * Avoid the use of gray/black color, used instead for vertical lines and higlighted trapezoids
  */
-void setDrawableTrapezoidColor(DrawableTrapezoid &dTrap)
+void DrawableTrapezoidalMap::setDrawableTrapezoidColor(DrawableTrapezoid &dTrap)
 {
-    /* Set the drawable trapezoid color with random:
-     *  - hue in the interval [0,359]
-     *  - saturation in the interval [128,255]
-     *  - value in the interval [128,255]
-     * Avoid the use of gray/black color, used instead for vertical lines and higlighted trapezoids */
     dTrap.setColor(rand() % 359, 128 + rand() % 128, 128 + rand() % 128);
 }
 
