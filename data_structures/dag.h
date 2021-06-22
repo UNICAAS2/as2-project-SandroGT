@@ -1,59 +1,45 @@
 #ifndef DAG_H
 #define DAG_H
 
-#include <unordered_map>
 #include <vector>
 
 namespace gasprj {
 
-enum class NodeType {XNode, YNode, Leaf};
-
-class DAGNode
-{
-public:
-    DAGNode();
-    DAGNode(NodeType typeInfo, size_t idInfo, size_t idNodeL, size_t idNodeR);
-
-    NodeType getNodeType();
-    void setNodeType(NodeType nodeType);
-
-    size_t getIdInfo() const;
-    void setIdInfo(size_t id);
-
-    size_t getIdNodeL() const;
-    void setIdNodeL(size_t id);
-    size_t getIdNodeR() const;
-    void setIdNodeR(size_t id);
-
-private:
-    NodeType typeInfo;
-    size_t idInfo, idNodeL, idNodeR;
-};
-
+/**
+ * @brief The DAG query data structure
+ *
+ * This class defines a DAG data structure associated to a trapezoidal map to perform the point location queries. The
+ * DAG (directed acyclic graph) is composed by a set of internal nodes (X and Y nodes) and leaves (trapezoids).
+ */
 class DAG
 {
 public:
+    /* Classes */
+    class Node;
+
+    /* Constructors */
     DAG();
 
-    const DAGNode& getRoot() const;
-    const DAGNode& getNode(size_t id) const;
-    const std::vector<DAGNode>& getNodes() const;
-    void addNewNode(DAGNode& newNode);
-    void overwriteNode(DAGNode& newNode, size_t id);
-    size_t getNumberNodes();
+    /* Public methods */
+    const Node &getRoot() const;
+    const Node &getNode(size_t id) const;
 
-    size_t findLeaf(size_t trapezoidId);
-    void mapLeaf(size_t trapezoidId, size_t nodeId);
-    void remapLeaf(size_t trapezoidId, size_t nodeId);
+    const std::vector<Node> &getNodes() const;
+    size_t size();
+
+    void addNode(Node &node);
+    void overwriteNode(Node &node, size_t id);
 
     void clear();
 
 private:
-    std::vector<DAGNode> nodes;
-
-    std::unordered_map<size_t, size_t> leavesMap;
+    /* Attributes */
+    std::vector<Node> nodes;
 };
 
 } // End namespace gasprj
+
+#include "dag_node.h"
+#include "dag.tpp"
 
 #endif // DAG_H
