@@ -52,4 +52,6 @@ private:
 
 } // End namespace gasprj
 
+#include "dag_node.tpp"
+
 #endif // NODE_H

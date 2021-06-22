@@ -8,7 +8,7 @@ namespace gasprj {
  * @param[in] boundingBoxCornerBL The bottom-left corner of the bounding box
  * @param[in] boundingBoxCornerTR The top-right corner of the bounding box
  */
-TrapezoidalMap::TrapezoidalMap(TrapezoidalMapDataset *const refTrapezoidalMapDataset,
+inline TrapezoidalMap::TrapezoidalMap(TrapezoidalMapDataset *const refTrapezoidalMapDataset,
                                const cg3::Point2d &boundingBoxCornerBL, const cg3::Point2d &boundingBoxCornerTR) :
     refTrapezoidalMapDataset(refTrapezoidalMapDataset),
     boundingBox(cg3::Point2d(boundingBoxCornerBL),cg3::Point2d(boundingBoxCornerTR))
@@ -20,7 +20,7 @@ TrapezoidalMap::TrapezoidalMap(TrapezoidalMapDataset *const refTrapezoidalMapDat
  * @param[in] id The ID of the trapezoid
  * @return A reference to the specified trapezoid
  */
-Trapezoid &TrapezoidalMap::getTrapezoid(size_t id)
+inline Trapezoid &TrapezoidalMap::getTrapezoid(size_t id)
 {
     assert(id < trapezoids.size());
     return trapezoids[id];
@@ -31,7 +31,7 @@ Trapezoid &TrapezoidalMap::getTrapezoid(size_t id)
  * @param[in] id The ID of the trapezoid
  * @return A costant reference to the specified trapezoid
  */
-const Trapezoid &TrapezoidalMap::getTrapezoid(size_t id) const
+inline const Trapezoid &TrapezoidalMap::getTrapezoid(size_t id) const
 {
     assert(id < trapezoids.size());
     return trapezoids[id];
@@ -41,7 +41,7 @@ const Trapezoid &TrapezoidalMap::getTrapezoid(size_t id) const
  * @brief Get the number of trapezoids in the trapezoidal map
  * @return The number of trapezoids in the trapezoidal map
  */
-size_t TrapezoidalMap::size() const
+inline size_t TrapezoidalMap::size() const
 {
     return trapezoids.size();
 }
@@ -50,7 +50,7 @@ size_t TrapezoidalMap::size() const
  * @brief Add a new trapezoid to the trapezoidal map
  * @param[in] trapezoid The new trapezoid
  */
-void TrapezoidalMap::addTrapezoid(const Trapezoid &trapezoid)
+inline void TrapezoidalMap::addTrapezoid(const Trapezoid &trapezoid)
 {
     trapezoids.push_back(trapezoid);
 }
@@ -60,7 +60,7 @@ void TrapezoidalMap::addTrapezoid(const Trapezoid &trapezoid)
  * @param[in] trapezoid The new trapezoid
  * @param[in] id The ID of the trapezoid to overwrite
  */
-void TrapezoidalMap::overwriteTrapezoid(const Trapezoid &trapezoid, size_t id)
+inline void TrapezoidalMap::overwriteTrapezoid(const Trapezoid &trapezoid, size_t id)
 {
     assert(id < trapezoids.size());
     trapezoids[id] = trapezoid;
@@ -70,7 +70,7 @@ void TrapezoidalMap::overwriteTrapezoid(const Trapezoid &trapezoid, size_t id)
  * @brief Get a reference to the trapezoidal map dataset
  * @return A reference to the trapezoidal map dataset
  */
-TrapezoidalMapDataset *TrapezoidalMap::getRefTrapezoidalMapDataset()
+inline TrapezoidalMapDataset *TrapezoidalMap::getRefTrapezoidalMapDataset()
 {
     return refTrapezoidalMapDataset;
 }
@@ -79,7 +79,7 @@ TrapezoidalMapDataset *TrapezoidalMap::getRefTrapezoidalMapDataset()
  * @brief Get a non-modifiable reference to the trapezoidal map dataset
  * @return A constant reference to the trapezoidal map dataset
  */
-const TrapezoidalMapDataset *TrapezoidalMap::getRefTrapezoidalMapDataset() const
+inline const TrapezoidalMapDataset *TrapezoidalMap::getRefTrapezoidalMapDataset() const
 {
     return refTrapezoidalMapDataset;
 }
@@ -88,7 +88,7 @@ const TrapezoidalMapDataset *TrapezoidalMap::getRefTrapezoidalMapDataset() const
  * @brief Get the bounding box
  * @return The bounding box
  */
-const cg3::BoundingBox2 &TrapezoidalMap::getBoundingBox() const
+inline const cg3::BoundingBox2 &TrapezoidalMap::getBoundingBox() const
 {
     return boundingBox;
 }
@@ -96,7 +96,7 @@ const cg3::BoundingBox2 &TrapezoidalMap::getBoundingBox() const
 /**
  * @brief Delete all the trapezoids stored in the trapezoidal map
  */
-void TrapezoidalMap::clear()
+inline void TrapezoidalMap::clear()
 {
     trapezoids.clear();
 }

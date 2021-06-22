@@ -7,7 +7,7 @@ namespace gasprj {
  *
  * Initialize a trapezoid with no references to any point, segment, trapezoid or DAG leaf.
  */
-Trapezoid::Trapezoid() :
+inline Trapezoid::Trapezoid() :
     idSegmentT(NO_ID), idSegmentB(NO_ID), idPointL(NO_ID), idPointR(NO_ID),
     idAdjacentTrapezoidTL(NO_ID), idAdjacentTrapezoidTR(NO_ID),
     idAdjacentTrapezoidBL(NO_ID), idAdjacentTrapezoidBR(NO_ID),
@@ -29,7 +29,7 @@ Trapezoid::Trapezoid() :
  *
  * Initialize a trapezoid specifying all its data references.
  */
-Trapezoid::Trapezoid(size_t idSegmentT, size_t idSegmentB, size_t idPointL, size_t idPointR,
+inline Trapezoid::Trapezoid(size_t idSegmentT, size_t idSegmentB, size_t idPointL, size_t idPointR,
                      size_t idTrapezoidTL, size_t idTrapezoidTR, size_t idTrapezoidBL, size_t idTrapezoidBR, size_t idDagLeaf) :
     idSegmentT(idSegmentT), idSegmentB(idSegmentB), idPointL(idPointL), idPointR(idPointR),
     idAdjacentTrapezoidTL(idTrapezoidTL), idAdjacentTrapezoidTR(idTrapezoidTR),
@@ -42,7 +42,7 @@ Trapezoid::Trapezoid(size_t idSegmentT, size_t idSegmentB, size_t idPointL, size
  * @brief Get the ID of the top segment
  * @return The ID of the top segment
  */
-size_t Trapezoid::getIdSegmentT() const
+inline size_t Trapezoid::getIdSegmentT() const
 {
     return idSegmentT;
 }
@@ -51,7 +51,7 @@ size_t Trapezoid::getIdSegmentT() const
  * @brief Set the ID of the top segment
  * @param[in] id The new ID of the top segment
  */
-void Trapezoid::setIdSegmentT(size_t id)
+inline void Trapezoid::setIdSegmentT(size_t id)
 {
     idSegmentT = id;
 }
@@ -60,7 +60,7 @@ void Trapezoid::setIdSegmentT(size_t id)
  * @brief Get the ID of the bottom segment
  * @return The ID of the bottom segment
  */
-size_t Trapezoid::getIdSegmentB() const
+inline size_t Trapezoid::getIdSegmentB() const
 {
     return idSegmentB;
 }
@@ -69,7 +69,7 @@ size_t Trapezoid::getIdSegmentB() const
  * @brief Set the ID of the bottom segment
  * @param[in] id The new ID of the bottom segment
  */
-void Trapezoid::setIdSegmentB(size_t id)
+inline void Trapezoid::setIdSegmentB(size_t id)
 {
     idSegmentB = id;
 }
@@ -78,7 +78,7 @@ void Trapezoid::setIdSegmentB(size_t id)
  * @brief Get the ID of the left point
  * @return The ID of the left point
  */
-size_t Trapezoid::getIdPointL() const
+inline size_t Trapezoid::getIdPointL() const
 {
     return idPointL;
 }
@@ -87,7 +87,7 @@ size_t Trapezoid::getIdPointL() const
  * @brief Set the ID of the left point
  * @param[in] id The new ID of the left point
  */
-void Trapezoid::setIdPointL(size_t id)
+inline void Trapezoid::setIdPointL(size_t id)
 {
     idPointL = id;
 }
@@ -96,7 +96,7 @@ void Trapezoid::setIdPointL(size_t id)
  * @brief Get the ID of the right point
  * @return The ID of the right point
  */
-size_t Trapezoid::getIdPointR() const
+inline size_t Trapezoid::getIdPointR() const
 {
     return idPointR;
 }
@@ -105,7 +105,7 @@ size_t Trapezoid::getIdPointR() const
  * @brief Set the ID of the right point
  * @param[in] id The new ID of the right point
  */
-void Trapezoid::setIdPointR(size_t id)
+inline void Trapezoid::setIdPointR(size_t id)
 {
     idPointR = id;
 }
@@ -114,7 +114,7 @@ void Trapezoid::setIdPointR(size_t id)
  * @brief Get the ID of the adjacent top-left trapezoid
  * @return The ID of the adjacent top-left trapezoid
  */
-size_t Trapezoid::getIdAdjacencyTL() const
+inline size_t Trapezoid::getIdAdjacencyTL() const
 {
     return idAdjacentTrapezoidTL;
 }
@@ -123,7 +123,7 @@ size_t Trapezoid::getIdAdjacencyTL() const
  * @brief Set the ID of the adjacent top-left trapezoid
  * @param[in] id The new ID of the adjacent top-left trapezoid
  */
-void Trapezoid::setIdAdjacencyTL(size_t id)
+inline void Trapezoid::setIdAdjacencyTL(size_t id)
 {
     idAdjacentTrapezoidTL = id;
 }
@@ -132,7 +132,7 @@ void Trapezoid::setIdAdjacencyTL(size_t id)
  * @brief Get the ID of the adjacent top-right trapezoid
  * @return The ID of the adjacent top-right trapezoid
  */
-size_t Trapezoid::getIdAdjacencyTR() const
+inline size_t Trapezoid::getIdAdjacencyTR() const
 {
     return idAdjacentTrapezoidTR;
 }
@@ -141,7 +141,7 @@ size_t Trapezoid::getIdAdjacencyTR() const
  * @brief Set the ID of the adjacent top-right trapezoid
  * @param[in] id The new ID of the adjacent top-right trapezoid
  */
-void Trapezoid::setIdAdjacencyTR(size_t id)
+inline void Trapezoid::setIdAdjacencyTR(size_t id)
 {
     idAdjacentTrapezoidTR = id;
 }
@@ -150,7 +150,7 @@ void Trapezoid::setIdAdjacencyTR(size_t id)
  * @brief Get the ID of the adjacent bottom-left trapezoid
  * @return The ID of the adjacent bottom-left trapezoid
  */
-size_t Trapezoid::getIdAdjacencyBL() const
+inline size_t Trapezoid::getIdAdjacencyBL() const
 {
     return idAdjacentTrapezoidBL;
 }
@@ -159,7 +159,7 @@ size_t Trapezoid::getIdAdjacencyBL() const
  * @brief Set the ID of the adjacent bottom-left trapezoid
  * @param[in] id The new ID of the adjacent bottom-left trapezoid
  */
-void Trapezoid::setIdAdjacencyBL(size_t id)
+inline void Trapezoid::setIdAdjacencyBL(size_t id)
 {
     idAdjacentTrapezoidBL = id;
 }
@@ -168,7 +168,7 @@ void Trapezoid::setIdAdjacencyBL(size_t id)
  * @brief Get the ID of the adjacent bottom-right trapezoid
  * @return The ID of the adjacent bottom-right trapezoid
  */
-size_t Trapezoid::getIdAdjacencyBR() const
+inline size_t Trapezoid::getIdAdjacencyBR() const
 {
     return idAdjacentTrapezoidBR;
 }
@@ -177,7 +177,7 @@ size_t Trapezoid::getIdAdjacencyBR() const
  * @brief Set the ID of the adjacent bottom-right trapezoid
  * @param[in] id The new ID of the adjacent bottom-right trapezoid
  */
-void Trapezoid::setIdAdjacencyBR(size_t id)
+inline void Trapezoid::setIdAdjacencyBR(size_t id)
 {
     idAdjacentTrapezoidBR = id;
 }
@@ -186,7 +186,7 @@ void Trapezoid::setIdAdjacencyBR(size_t id)
  * @brief Get the ID of the DAG leaf related to this trapezoid
  * @return The ID of the DAG leaf related to this trapezoid
  */
-size_t Trapezoid::getIdDagLeaf() const
+inline size_t Trapezoid::getIdDagLeaf() const
 {
     return idDagLeaf;
 }
@@ -195,7 +195,7 @@ size_t Trapezoid::getIdDagLeaf() const
  * @brief Set the ID of the DAG leaf related to this trapezoid
  * @param[in] id The new ID of the DAG leaf related to this trapezoid
  */
-void Trapezoid::setIdDagLeaf(size_t id)
+inline void Trapezoid::setIdDagLeaf(size_t id)
 {
     idDagLeaf = id;
 }

@@ -58,4 +58,6 @@ protected:
 
 } // End namespace gasprj
 
+#include "trapezoid.tpp"
+
 #endif // TRAPEZOID_H

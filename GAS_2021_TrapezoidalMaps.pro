@@ -41,11 +41,7 @@ DISTFILES += \
 
 SOURCES +=  \
     algorithms/planar_point_location.cpp \
-    data_structures/dag.cpp \
-    data_structures/dag_node.cpp \
     data_structures/segment_intersection_checker.cpp \
-    data_structures/trapezoid.cpp \
-    data_structures/trapezoidalmap.cpp \
     data_structures/trapezoidalmap_dataset.cpp \
     drawables/drawable_trapezoid.cpp \
     drawables/drawable_trapezoidalmap.cpp \
@@ -60,18 +56,19 @@ FORMS += \
 HEADERS += \
     algorithms/planar_point_location.h \
     data_structures/dag.h \
+    data_structures/dag.tpp \
     data_structures/dag_node.h \
+    data_structures/dag_node.tpp \
     data_structures/segment_intersection_checker.h \
     data_structures/trapezoid.h \
+    data_structures/trapezoid.tpp \
     data_structures/trapezoidalmap.h \
+    data_structures/trapezoidalmap.tpp \
     data_structures/trapezoidalmap_dataset.h \
     drawables/drawable_trapezoid.h \
+    drawables/drawable_trapezoid.tpp \
     drawables/drawable_trapezoidalmap.h \
+    drawables/drawable_trapezoidalmap.tpp \
     drawables/drawable_trapezoidalmap_dataset.h \
     managers/trapezoidalmap_manager.h \
     utils/fileutils.h
-
-
-
-
-

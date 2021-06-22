@@ -50,4 +50,6 @@ private:
 
 } // End namespace gasprj
 
+#include "drawable_trapezoidalmap.tpp"
+
 #endif // DRAWABLE_TRAPEZOIDALMAP_H

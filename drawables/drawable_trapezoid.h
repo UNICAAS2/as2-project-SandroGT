@@ -47,7 +47,7 @@ public:
     void setVertexBR(const cg3::Point2d &vertex);
 
 private:
-    /* Private static costants */
+    /* Private static constants */
     static const float TRAPEZOID_TRANSPARENCY;
     static const cg3::Color COLOR_TRAPEZOID_SELECTED;
     static const cg3::Color COLOR_VERTICAL_LINE;
@@ -61,5 +61,7 @@ private:
 };
 
 } // End namespace gasprj
+
+#include "drawable_trapezoid.tpp"
 
 #endif // DRAWABLETRAPEZOID_H

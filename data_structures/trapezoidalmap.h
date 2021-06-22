@@ -47,4 +47,6 @@ protected:
 
 } // End namespace gasprj
 
+#include "trapezoidalmap.tpp"
+
 #endif // TRAPEZOIDALMAP_H

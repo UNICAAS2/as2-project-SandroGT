@@ -9,7 +9,7 @@ namespace gasprj {
 /**
  * @brief Default constructor of a DAG
  */
-DAG::DAG() :
+inline DAG::DAG() :
     nodes()
 {
 }
@@ -18,7 +18,7 @@ DAG::DAG() :
  * @brief Get the root of the DAG
  * @return The first node of the DAG
  */
-const DAG::Node &DAG::getRoot() const
+inline const DAG::Node &DAG::getRoot() const
 {
     return nodes[0];
 }
@@ -28,7 +28,7 @@ const DAG::Node &DAG::getRoot() const
  * @param[in] id Index of the node
  * @return The specified node of the DAG
  */
-const DAG::Node &DAG::getNode(size_t id) const
+inline const DAG::Node &DAG::getNode(size_t id) const
 {
     return nodes[id];
 }
@@ -37,7 +37,7 @@ const DAG::Node &DAG::getNode(size_t id) const
  * @brief Get all the nodes of the DAG
  * @return A vector containing all the nodes of the DAG
  */
-const std::vector<DAG::Node> &DAG::getNodes() const
+inline const std::vector<DAG::Node> &DAG::getNodes() const
 {
     return nodes;
 }
@@ -48,7 +48,7 @@ const std::vector<DAG::Node> &DAG::getNodes() const
  *
  * Perform an insertion in the back of the vector of nodes
  */
-void DAG::addNode(DAG::Node &node)
+inline void DAG::addNode(DAG::Node &node)
 {
     nodes.push_back(node);
 }
@@ -58,7 +58,7 @@ void DAG::addNode(DAG::Node &node)
  * @param node New node
  * @param id Index of the node to be replaced
  */
-void DAG::overwriteNode(DAG::Node &node, size_t id)
+inline void DAG::overwriteNode(DAG::Node &node, size_t id)
 {
     assert(id < nodes.size());
     nodes[id] = node;
@@ -68,7 +68,7 @@ void DAG::overwriteNode(DAG::Node &node, size_t id)
  * @brief Get the number of nodes (internal and leaves) composing the DAG
  * @return The number of nodes in the DAG
  */
-size_t DAG::size()
+inline size_t DAG::size()
 {
     return nodes.size();
 }
@@ -76,7 +76,7 @@ size_t DAG::size()
 /**
  * @brief Delete all the nodes in the DAG
  */
-void DAG::clear()
+inline void DAG::clear()
 {
     nodes.clear();
 }
