@@ -42,12 +42,16 @@ according to the following structure:
        segments inducing the trapezoidal map;
 - **managers**: part of the base project, these files handle the user interface;
 
+One of the most importance choices has been about the core data structures used to implement the *DAG* and the *trapezoidal map*:
+in both cases a vector has been chosen, since there was no need to perform deletions of *trapezoids* or *DAG nodes*, and there
+was no interest in their order inside the structure, allowing new insertions to be done in the back. The vector seemed the
+best choice in these cases.
 
 # Results
 
 ### Running the application
 At the first launch, both the *DAG* and *trapezoidal map* are initialized with a first trapezoid representing the
-bounding box, at which is assigned a random color. This is the look of the interface:
+bounding box, to which is assigned a random color. This is the look of the interface:
 
 ![](images/readme-img-1.png)
 
@@ -92,6 +96,11 @@ Segments | Time (seconds)
 5000| 0.014326
 10000| 0.038763
 20000| 0.066787
+
+For the segments up to 10,000, the time values are the mean of the times observed over four random generations of
+segments, while for the 20,000 segments, because of the time needed for their random generation, the time is the result
+of a single random generation. All these values are just indicative of the code performance and not the results of an
+appropriate evaluation test.
 
 ### Known issues
 The base project (without trapezoids) allowed to see the first point selected with the mouse pointer when adding a new
